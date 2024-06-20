@@ -1,23 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mnnit/models/product.dart';
 import 'package:mnnit/pages/category_page.dart';
 import 'package:mnnit/widgets/product_tile.dart';
 
 class HomePage extends StatelessWidget {
-  final List<String> categories = ['Bicycles', 'Coolers', 'Fans', 'Tables', 'Stationaries'];
-  final List<Product> recentProducts = [
-    Product(
-      id: '1',
-      name: 'Bicycle',
-      price: 100.0,
-      images: ['assets/bicycle.jpg'],
-      details: 'A good bicycle',
-      description: 'Used for 1 year, good condition',
-    ),
-    // Add more products here
-  ];
-
   HomePage({super.key});
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<List<Map<String, dynamic>>> _fetchCategories() async {
+    final QuerySnapshot snapshot = await _firestore.collection('categories').get();
+    return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+  }
+
+  Future<List<Product>> _fetchRecentProducts() async {
+    final QuerySnapshot snapshot = await _firestore.collection('products').get();
+    return snapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return Product(
+        id: doc.id,
+        name: data['name'],
+        price: data['price'],
+        images: List<String>.from(data['images']),
+        details: data['details'],
+        description: data['description'],
+        category: data['category'],
+        // Add other fields if necessary
+      );
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,31 +43,82 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const Text('Categories', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Categories', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  IconButton(onPressed: (){}, icon: Icon(Icons.search)),
+                ],
+              ),
               const SizedBox(height: 10),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: categories.map((category) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>CategoryPage(category: category,)));
-                      },
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(category),
-                        ),
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: _fetchCategories(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Text('No categories available.');
+                  } else {
+                    final categories = snapshot.data!;
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: categories.map((category) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CategoryPage(category: category['name']),
+                                ),
+                              );
+                            },
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  children: [
+                                    Image.network(category['image'], width: 50, height: 50),
+                                    const SizedBox(height: 5),
+                                    Text(category['name']),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
                     );
-                  }).toList(),
-                ),
+                  }
+                },
               ),
               const SizedBox(height: 20),
-              const Text('Recently Uploaded', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Recently Added', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  IconButton(onPressed: (){}, icon: Icon(Icons.search)),
+                ],
+              ),
               const SizedBox(height: 10),
-              Column(
-                children: recentProducts.map((product) => ProductTile(product: product)).toList(),
+              FutureBuilder<List<Product>>(
+                future: _fetchRecentProducts(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Text('No recent products available.');
+                  } else {
+                    final recentProducts = snapshot.data!;
+                    return Column(
+                      children: recentProducts.map((product) => ProductTile(product: product)).toList(),
+                    );
+                  }
+                },
               ),
             ],
           ),

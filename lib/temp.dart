@@ -1,23 +1,14 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mnnit/firebase_options.dart';
-import 'package:mnnit/pages/landing_page.dart';
-import 'package:mnnit/pages/login_page.dart';
-import 'package:mnnit/pages/splash.dart';
-import 'package:provider/provider.dart';
 import 'package:mnnit/pages/home_page.dart';
 import 'package:mnnit/providers/theme_provider.dart';
+import 'package:provider/provider.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const MyApp());
+void main() {
+  runApp(const App());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class App extends StatelessWidget {
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +46,7 @@ class MyApp extends StatelessWidget {
             ),
             themeMode: themeModel.thememode,
             // home: const SplashScreen()
-            // home: LoginPage(),
-            // home: HomePage(),
-            home: LandingPage(),
+            home: HomePage(),
           );
         },
       ),

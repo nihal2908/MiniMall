@@ -102,6 +102,9 @@ class RegisterPage extends StatelessWidget {
                   return null;
                 },
               ),
+              const SizedBox(
+                height: 20,
+              ),
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Email',
@@ -120,40 +123,48 @@ class RegisterPage extends StatelessWidget {
                   return null;
                 },
               ),
-              StatefulBuilder(builder: (context, genderState) {
-                return DropdownButtonFormField<String>(
-                  value: selectedGender,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  // decoration: InputDecoration(
-                  //   labelText: 'Gender',
-                  //   icon: const Icon(Icons.people),
-                  //   floatingLabelAlignment: FloatingLabelAlignment.center,
-                  //   border: OutlineInputBorder(
-                  //     borderSide: const BorderSide(),
-                  //     borderRadius: BorderRadius.circular(15),
-                  //   ),
-                  // ),
-                  items: ['Select Gender', 'Male', 'Female', 'Other']
-                      .map((gender) => DropdownMenuItem(
-                            value: gender,
-                            child: Text(gender),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    genderState(
-                      () {
-                        selectedGender = value!;
-                      },
-                    );
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty || value == 'Select') {
-                      return 'Required';
-                    }
-                    return null;
-                  },
-                );
-              }),
+              const SizedBox(
+                height: 20,
+              ),
+              StatefulBuilder(
+                builder: (context, genderState) {
+                  return DropdownButtonFormField<String>(
+                    value: selectedGender,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    // decoration: InputDecoration(
+                    //   labelText: 'Gender',
+                    //   icon: const Icon(Icons.people),
+                    //   floatingLabelAlignment: FloatingLabelAlignment.center,
+                    //   border: OutlineInputBorder(
+                    //     borderSide: const BorderSide(),
+                    //     borderRadius: BorderRadius.circular(15),
+                    //   ),
+                    // ),
+                    items: ['Select Gender', 'Male', 'Female', 'Other']
+                        .map((gender) => DropdownMenuItem(
+                              value: gender,
+                              child: Text(gender),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      genderState(
+                        () {
+                          selectedGender = value!;
+                        },
+                      );
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty || value == 'Select') {
+                        return 'Required';
+                      }
+                      return null;
+                    },
+                  );
+                },
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Password'),
                 controller: password,

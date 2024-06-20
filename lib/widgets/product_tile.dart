@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mnnit/models/product.dart';
+import 'package:mnnit/pages/product_details_page.dart';
 
 class ProductTile extends StatelessWidget {
   final Product product;
@@ -10,13 +11,13 @@ class ProductTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/product', arguments: product);
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailsPage(product: product, userId: 'JRuhTvwywdSeBirkl1tO',)));
       },
       child: Card(
         child: ListTile(
-          leading: Image.asset(product.images[0]),
+          leading: Image.network(product.images[0]),
           title: Text(product.name),
-          subtitle: Text('\$${product.price.toString()}'),
+          subtitle: Text('\₹${product.price}'),
         ),
       ),
     );

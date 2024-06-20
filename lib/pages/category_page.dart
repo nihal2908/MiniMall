@@ -1,27 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mnnit/models/product.dart';
+import 'package:mnnit/widgets/product_tile.dart';
 
 class CategoryPage extends StatelessWidget {
-  
   final String category;
+
   const CategoryPage({super.key, required this.category});
+
+  Future<List<Product>> _fetchProductsByCategory() async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Fetch the category document to get the list of product IDs
+    final DocumentSnapshot categoryDoc = await firestore.collection('categories').doc(category).get();
+    final List<String> productIds = List<String>.from(categoryDoc['products']);
+
+    // Fetch the products using the product IDs
+    final QuerySnapshot productsSnapshot = await firestore
+        .collection('products')
+        .where(FieldPath.documentId, whereIn: productIds)
+        .get();
+
+    return productsSnapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return Product(
+        id: doc.id,
+        name: data['name'],
+        price: data['price'],
+        images: List<String>.from(data['images']),
+        details: data['details'],
+        description: data['description'],
+        category: data['category']
+        // Add other fields if necessary
+      );
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
-
-    // Here you would fetch and display products based on the category
-    // For simplicity, this is just a placeholder
-    final List<String> items = ['Item 1', 'Item 2', 'Item 3'];
-
     return Scaffold(
       appBar: AppBar(
         title: Text(category),
       ),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(items[index]),
-          );
+      body: FutureBuilder<List<Product>>(
+        future: _fetchProductsByCategory(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No products found.'));
+          } else {
+            final products = snapshot.data!;
+            return ListView.builder(
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                return ProductTile(product: products[index]);
+              },
+            );
+          }
         },
       ),
     );

@@ -5,6 +5,7 @@ class Product {
   final List<String> images;
   final String details;
   final String description;
+  final String category;
 
   Product({
     required this.id,
@@ -13,5 +14,6 @@ class Product {
     required this.images,
     required this.details,
     required this.description,
+    required this.category
   });
 }
