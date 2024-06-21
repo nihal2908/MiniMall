@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mnnit/pages/home_page.dart';
+import 'package:mnnit/pages/imageTest.dart';
 import 'package:mnnit/pages/profile_page.dart';
 import 'package:mnnit/pages/sell_page.dart';
 
@@ -10,7 +11,7 @@ class LandingPage extends StatefulWidget {
   State<LandingPage> createState() => _LandingPageState();
 }
 
-List<Widget> Tabs = [HomePage(), ProfilePage(), SellPage()];
+List<Widget> Tabs = [HomePage(), ImageUploadPage(), SellPage()];
 
 class _LandingPageState extends State<LandingPage> {
   int currentTabIndex = 0;

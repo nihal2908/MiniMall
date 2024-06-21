@@ -13,7 +13,7 @@ class SellPage extends StatefulWidget {
 
 class _SellPageState extends State<SellPage> {
   final TextEditingController name = TextEditingController();
-  final TextEditingController prize = TextEditingController();
+  final TextEditingController price = TextEditingController();
   final TextEditingController description = TextEditingController();
   final TextEditingController details = TextEditingController();
   final TextEditingController new_category = TextEditingController();
@@ -101,7 +101,7 @@ class _SellPageState extends State<SellPage> {
               ),
             ),
             TextField(
-              controller: prize,
+              controller: price,
               decoration: InputDecoration(
                 labelText: 'Price',
               ),
@@ -163,7 +163,7 @@ class _SellPageState extends State<SellPage> {
                   'description': description.text,
                   'details': details.text,
                   'category': new_category.text.isNotEmpty ? new_category.text : category,
-                  'price': double.parse(prize.text),
+                  'price': double.parse(price.text),
                   'timestamp': FieldValue.serverTimestamp(),
                   'images': imageControllers.map((image) => image.text).toList(),
                 });
@@ -176,6 +176,8 @@ class _SellPageState extends State<SellPage> {
               },
               child: Text('Add'),
             ),
+            Image.network('https://firebasestorage.googleapis.com/v0/b/mnnit-a08f6.appspot.com/o/images%2F1718890691058?alt=media&token=39bef5f4-81f4-4421-8dbb-0d8993c9c318'),
+
           ],
         ),
       ),

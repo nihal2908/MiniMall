@@ -55,9 +55,9 @@ class MyApp extends StatelessWidget {
             ),
             themeMode: themeModel.thememode,
             // home: const SplashScreen()
-            // home: LoginPage(),
+            home: LoginPage(),
             // home: HomePage(),
-            home: LandingPage(),
+            // home: LandingPage(),
           );
         },
       ),

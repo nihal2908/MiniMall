@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mnnit/firebase/firebase_auth.dart';
 import 'package:mnnit/pages/home_page.dart';
+import 'package:mnnit/pages/landing_page.dart';
 import 'package:mnnit/widgets/toggle_theme_button.dart';
 
 class LoginPage extends StatelessWidget {
@@ -180,19 +181,18 @@ class RegisterPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // Handle sign up
-                  auth
-                      .register(
+                  auth.register(
                     email: email.text.trim(),
                     password: password.text.trim(),
                     name: name.text.trim(),
                     gender: selectedGender,
-                  )
-                      .then(
-                    (value) {
-                      verify(value, context);
-                    },
-                  );
-                },
+                  ).then((value) => Navigator.push(context, MaterialPageRoute(builder: (context)=>LandingPage())))
+                    //   .then(
+                    // (value) {
+                    //   verify(value, context);
+                    // },
+                  // );
+                ;},
                 child: const Text('Sign Up'),
               ),
               TextButton(
