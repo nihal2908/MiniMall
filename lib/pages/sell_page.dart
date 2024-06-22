@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mnnit/firebase/firebase_storage.dart';
 import 'package:mnnit/widgets/circular_progress.dart';
 
 class SellPage extends StatefulWidget {
@@ -157,27 +158,23 @@ class _SellPageState extends State<SellPage> {
             SizedBox(height: 30),
             MaterialButton(
               onPressed: () async {
-                final firestore = FirebaseFirestore.instance;
-                final productDoc = await firestore.collection('products').add({
-                  'name': name.text,
-                  'description': description.text,
-                  'details': details.text,
-                  'category': new_category.text.isNotEmpty ? new_category.text : category,
-                  'price': double.parse(price.text),
-                  'timestamp': FieldValue.serverTimestamp(),
-                  'images': imageControllers.map((image) => image.text).toList(),
-                });
-
-                await firestore.collection('categories').doc(new_category.text.isNotEmpty ? new_category.text : category).set({
-                  'name': new_category.text.isNotEmpty ? new_category.text : category,
-                  'image': imageControllers[0].text,
-                  'products': FieldValue.arrayUnion([productDoc.id]),
-                }, SetOptions(merge: true));
+                final Firebase storage = Firebase();
+                await storage.addProduct(
+                    name: name.text,
+                    description: description.text,
+                    category: new_category.text.isNotEmpty ? new_category.text : category,
+                    price: price.text,
+                    details: details.text,
+                    images: imageControllers.map((image) => image.text).toList()
+                );
               },
               child: Text('Add'),
             ),
-            Image.network('https://firebasestorage.googleapis.com/v0/b/mnnit-a08f6.appspot.com/o/images%2F1718890691058?alt=media&token=39bef5f4-81f4-4421-8dbb-0d8993c9c318'),
-
+            // Image.network('https://firebasestorage.googleapis.com/v0/b/mnnit-a08f6.appspot.com/o/images%2F1718893634179.jpg?alt=media&token=b274855d-b645-4f4f-9592-a256f2bdc2ab'),
+            TextButton(onPressed: () async {
+              final storage = Firebase();
+              await storage.removeFromHistory('0Ea7dW2kXI2UjM7YGB4j');
+            }, child: Text('delete test')),
           ],
         ),
       ),

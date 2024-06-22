@@ -120,7 +120,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
     try {
       List<String> imageUrls = [];
       for (var image in _images) {
-        String fileName = DateTime.now().millisecondsSinceEpoch.toString()+'.jpg';
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
         Reference ref = FirebaseStorage.instance.ref().child('images').child(fileName);
         UploadTask uploadTask;
 

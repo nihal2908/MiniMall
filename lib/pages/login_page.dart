@@ -8,6 +8,10 @@ import 'package:mnnit/pages/landing_page.dart';
 import 'package:mnnit/widgets/toggle_theme_button.dart';
 
 class LoginPage extends StatelessWidget {
+  final Auth auth = Auth();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,23 +25,26 @@ class LoginPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            const TextField(
+            TextField(
               decoration: InputDecoration(labelText: 'Email'),
+              controller: email,
             ),
-            const TextField(
+            TextField(
+              controller: password,
               decoration: InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // Handle login
+                await auth.login(email.text, password.text).then((value) =>
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HomePage(),
+                    builder: (context) => LandingPage(),
                   ),
-                );
+                ));
               },
               child: const Text('Login'),
             ),
