@@ -60,6 +60,13 @@ class Firebase{
     }
   }
 
+  void deleteChat({required String id}) async {
+    final String uid = await auth.getCurentUser()!.uid;
+    firestore.collection('users').doc(uid).update({
+      'chats': FieldValue.arrayRemove([id])
+    });
+  }
+
   Future<void> updateProduct({
     required String productID,
     required String name,

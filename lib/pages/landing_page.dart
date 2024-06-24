@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mnnit/pages/caht_page.dart';
 import 'package:mnnit/pages/home_page.dart';
 import 'package:mnnit/pages/imageTest.dart';
 import 'package:mnnit/pages/profile_page.dart';
@@ -11,7 +12,7 @@ class LandingPage extends StatefulWidget {
   State<LandingPage> createState() => _LandingPageState();
 }
 
-List<Widget> Tabs = [HomePage(), ImageUploadPage(), SellPage()];
+List<Widget> Tabs = [HomePage(), ImageUploadPage(), SellPage(), ChatPage()];
 
 class _LandingPageState extends State<LandingPage> {
   int currentTabIndex = 0;
@@ -43,6 +44,11 @@ class _LandingPageState extends State<LandingPage> {
             selectedIcon: Icon(Icons.outbox),
             icon: Icon(Icons.outbox_outlined),
             label: 'Sell',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.chat),
+            icon: Icon(Icons.chat_outlined),
+            label: 'Chat',
           ),
           // NavigationDestination(
           //   //selectedIcon: Icon(),
