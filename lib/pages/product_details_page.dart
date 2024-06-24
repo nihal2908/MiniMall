@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mnnit/firebase/firebase_storage.dart';
 import 'package:mnnit/models/product.dart';
 import 'package:mnnit/widgets/product_tile.dart';
 
 class ProductDetailsPage extends StatelessWidget {
   final Product product;
   final String userId; // Add userId to fetch viewing history
+  final Firebase storage = Firebase();
 
-  const ProductDetailsPage({super.key, required this.product, required this.userId});
+  ProductDetailsPage({super.key, required this.product, required this.userId});
 
   Future<List<Product>> _fetchRecommendations() async {
     final firestore = FirebaseFirestore.instance;
@@ -102,9 +104,15 @@ class ProductDetailsPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  ElevatedButton(onPressed: () {}, child: const Text('Add to Wishlist')),
-                  ElevatedButton(onPressed: () {}, child: const Text('Buy Now')),
-                  ElevatedButton(onPressed: () {}, child: const Text('Contact Dealer')),
+                  ElevatedButton(onPressed: () {
+                    storage.addToWishlist(productID: product.id);
+                  }, child: const Text('Add to Wishlist')),
+                  ElevatedButton(onPressed: () {
+
+                  }, child: const Text('Buy Now')),
+                  ElevatedButton(onPressed: () {
+
+                  }, child: const Text('Contact Dealer')),
                 ],
               ),
               const SizedBox(height: 20),

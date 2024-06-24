@@ -18,6 +18,7 @@ class _SellPageState extends State<SellPage> {
   final TextEditingController description = TextEditingController();
   final TextEditingController details = TextEditingController();
   final TextEditingController new_category = TextEditingController();
+  final TextEditingController location = TextEditingController();
 
   String category = '';
   List<String> categories = [];
@@ -102,6 +103,12 @@ class _SellPageState extends State<SellPage> {
               ),
             ),
             TextField(
+              controller: location,
+              decoration: InputDecoration(
+                labelText: 'Location',
+              ),
+            ),
+            TextField(
               controller: price,
               decoration: InputDecoration(
                 labelText: 'Price',
@@ -165,7 +172,8 @@ class _SellPageState extends State<SellPage> {
                     category: new_category.text.isNotEmpty ? new_category.text : category,
                     price: price.text,
                     details: details.text,
-                    images: imageControllers.map((image) => image.text).toList()
+                    location: location.text,
+                    images: imageControllers.map((image) => image.text).toList(),
                 );
               },
               child: Text('Add'),
@@ -173,7 +181,7 @@ class _SellPageState extends State<SellPage> {
             // Image.network('https://firebasestorage.googleapis.com/v0/b/mnnit-a08f6.appspot.com/o/images%2F1718893634179.jpg?alt=media&token=b274855d-b645-4f4f-9592-a256f2bdc2ab'),
             TextButton(onPressed: () async {
               final storage = Firebase();
-              await storage.removeFromHistory('0Ea7dW2kXI2UjM7YGB4j');
+              await storage.removeFromHistory(productID: '0Ea7dW2kXI2UjM7YGB4j');
             }, child: Text('delete test')),
           ],
         ),

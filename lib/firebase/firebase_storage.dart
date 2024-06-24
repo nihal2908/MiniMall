@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -13,7 +12,7 @@ class Firebase{
   final Auth auth = Auth();
 
   //functions
-  Future<void> addToWishlist(String productID) async {
+  Future<void> addToWishlist({required String productID}) async {
     try {
       final String uid = await auth.getCurentUser()!.uid;
       await firestore.collection('users').doc(uid).set(
@@ -24,7 +23,7 @@ class Firebase{
     }
   }
 
-  Future<void> removeFromWishlist(String productID) async {
+  Future<void> removeFromWishlist({required String productID}) async {
     try {
       final String uid = await auth.getCurentUser()!.uid;
       await firestore.collection('users').doc(uid).set({
@@ -36,7 +35,7 @@ class Firebase{
     }
   }
 
-  Future<void> removeProduct(String productID)async {
+  Future<void> removeProduct({required String productID})async {
     try {
       final String uid = await auth.getCurentUser()!.uid;
       await firestore.collection('products').doc(productID).delete();
@@ -49,11 +48,30 @@ class Firebase{
     }
   }
 
-  Future<void> removeFromHistory(String productID) async {
+  Future<void> removeFromHistory({required String productID}) async {
     try {
       final String uid = await auth.getCurentUser()!.uid;
-      await firestore.collection('users').doc('JRuhTvwywdSeBirkl1tO').update({
+      await firestore.collection('users').doc(uid).update({
         'viewed': FieldValue.arrayRemove([productID])
+      });
+    }
+    catch(e){
+      print(e);
+    }
+  }
+
+  Future<void> updateProduct({
+    required String productID,
+    required String name,
+    required double newPrice,
+    required String description,
+    required String details,
+    required a
+  }) async {
+    try {
+      final String uid = await auth.getCurentUser()!.uid;
+      await firestore.collection('products').doc(uid).update({
+        'price': newPrice
       });
     }
     catch(e){
@@ -96,6 +114,7 @@ class Firebase{
     required String category,
     required String price,
     required String details,
+    required String location,
     required List<String> images,
   }) async {
     final String uid = await auth.getCurentUser()!.uid;
@@ -106,6 +125,7 @@ class Firebase{
       'category': category,
       'price': double.parse(price),
       'timestamp': FieldValue.serverTimestamp(),
+      'location': location,
       'images': images,
       'owner': uid
     });
