@@ -15,8 +15,9 @@ class Firebase{
   Future<void> addToWishlist({required String productID}) async {
     try {
       final String uid = await auth.getCurentUser()!.uid;
-      await firestore.collection('users').doc(uid).set(
-          {'wishlist': FieldValue.arrayUnion([productID])});
+      await firestore.collection('users').doc(uid).update({
+        'wishlist': FieldValue.arrayUnion([productID])
+      });
     }
     catch(e){
       print(e);
@@ -26,7 +27,7 @@ class Firebase{
   Future<void> removeFromWishlist({required String productID}) async {
     try {
       final String uid = await auth.getCurentUser()!.uid;
-      await firestore.collection('users').doc(uid).set({
+      await firestore.collection('users').doc(uid).update({
         'wishlist': FieldValue.arrayRemove([productID])
       });
     }
@@ -39,7 +40,7 @@ class Firebase{
     try {
       final String uid = await auth.getCurentUser()!.uid;
       await firestore.collection('products').doc(productID).delete();
-      await firestore.collection('users').doc(uid).set({
+      await firestore.collection('users').doc(uid).update({
         'products': FieldValue.arrayRemove([productID])
       });
     }
@@ -120,6 +121,7 @@ class Firebase{
     required String description,
     required String category,
     required String price,
+    required bool negotiable,
     required String details,
     required String location,
     required List<String> images,
@@ -131,6 +133,7 @@ class Firebase{
       'details': details,
       'category': category,
       'price': double.parse(price),
+      'negotiable': negotiable,
       'timestamp': FieldValue.serverTimestamp(),
       'location': location,
       'images': images,

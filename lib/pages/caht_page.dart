@@ -26,7 +26,7 @@ class _ChatPageState extends State<ChatPage> {
         future: firestore.collection('users').doc(auth.getCurentUser()!.uid).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CenterIndicator();
+            return CenterIndicator();
           }
           if (snapshot.hasError) {
             return ListTile(
@@ -41,7 +41,6 @@ class _ChatPageState extends State<ChatPage> {
           final userDoc = snapshot.data!;
 
           final List<dynamic> ids = userDoc['chats'];
-          print(ids.length);
           return SingleChildScrollView(
               child: ChatList(ids: ids)
           );
@@ -59,7 +58,7 @@ class _ChatPageState extends State<ChatPage> {
         future: firestore.collection('users').where(FieldPath.documentId, whereIn: ids).get(),
         builder: (context, snapshot){
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CenterIndicator();
+            return CenterIndicator();
           }
           if (snapshot.hasError) {
             return ListTile(
@@ -77,8 +76,7 @@ class _ChatPageState extends State<ChatPage> {
                 trailing: IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: (){
-                    storage.deleteChat(id: id);
-                    setState(() {});
+                    showDeleteDialog(context, id);
                   },
                 ),
                 onTap: () {
@@ -90,6 +88,34 @@ class _ChatPageState extends State<ChatPage> {
               ),
             );
           }).toList(),
+          );
+        }
+    );
+  }
+
+  void showDeleteDialog(BuildContext context, String id) {
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text('Delete Conversation?'),
+            content: Text('This will permanentlty delete all the conversation with this user!'),
+            actions: [
+              ElevatedButton(
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
+                  child: Text('Cancel', style: TextStyle(color: Colors.green),)
+              ),
+              ElevatedButton(
+                  onPressed: (){
+                    storage.deleteChat(id: id);
+                    setState(() {});
+                    Navigator.pop(context);
+                  },
+                  child: Text('Delete', style: TextStyle(color: Colors.red),)
+              ),
+            ],
           );
         }
     );

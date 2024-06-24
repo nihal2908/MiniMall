@@ -9,13 +9,14 @@ void showCircularProgressIndicator(BuildContext context){
 }
 
 class CenterIndicator extends StatelessWidget {
-  const CenterIndicator({super.key});
+  Color? color;
+  CenterIndicator({super.key, this.color});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: CircularProgressIndicator(
-        color: Colors.white,
+        color: color ?? Colors.white,
       ),
     );
   }

@@ -73,6 +73,11 @@ class ProductDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(product.name),
+        actions: [
+          IconButton(onPressed: (){
+            storage.addToWishlist(productID: product.id);
+          }, icon: Icon(Icons.add_shopping_cart))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -104,9 +109,6 @@ class ProductDetailsPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  ElevatedButton(onPressed: () {
-                    storage.addToWishlist(productID: product.id);
-                  }, child: const Text('Add to Wishlist')),
                   ElevatedButton(onPressed: () {
 
                   }, child: const Text('Buy Now')),

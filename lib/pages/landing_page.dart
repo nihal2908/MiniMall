@@ -12,7 +12,7 @@ class LandingPage extends StatefulWidget {
   State<LandingPage> createState() => _LandingPageState();
 }
 
-List<Widget> Tabs = [HomePage(), ImageUploadPage(), SellPage(), ChatPage()];
+List<Widget> Tabs = [HomePage(), ImageUploadPage(), AddProductPage(), ChatPage()];
 
 class _LandingPageState extends State<LandingPage> {
   int currentTabIndex = 0;
@@ -31,7 +31,7 @@ class _LandingPageState extends State<LandingPage> {
         selectedIndex: currentTabIndex,
         destinations: const <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.home),
+            selectedIcon: Icon(Icons.explore),
             icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
