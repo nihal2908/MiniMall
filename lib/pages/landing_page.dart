@@ -6,7 +6,8 @@ import 'package:mnnit/pages/setting_page.dart';
 import 'package:mnnit/pages/add_product_page.dart';
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({super.key});
+  LandingPage({super.key, required this.initialPage});
+  int initialPage;
 
   @override
   State<LandingPage> createState() => _LandingPageState();
@@ -16,6 +17,12 @@ List<Widget> Tabs = [HomePage(), SettingPage(), SellPage(), ChatPage()];
 
 class _LandingPageState extends State<LandingPage> {
   int currentTabIndex = 0;
+
+  @override
+  void initState() {
+    currentTabIndex = widget.initialPage;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

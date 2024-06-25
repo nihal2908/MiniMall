@@ -74,8 +74,9 @@ class ProductDetailsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(product.name),
         actions: [
-          IconButton(onPressed: (){
-            storage.addToWishlist(productID: product.id);
+          IconButton(onPressed: () async {
+            await storage.addToWishlist(productID: product.id);
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Product added to Wishlist')));
           }, icon: Icon(Icons.add_shopping_cart))
         ],
       ),

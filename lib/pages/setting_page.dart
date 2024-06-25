@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mnnit/pages/account_page.dart';
+import 'package:mnnit/pages/wishlist_page.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});
@@ -16,14 +17,28 @@ class SettingPage extends StatelessWidget {
           padding: EdgeInsets.all(8),
           child: Column(
             children: [
-              GestureDetector(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage()));
-                },
-                child: Card(
-                  child: ListTile(
-                      title: Text('Account Settings')
-                  ),
+              Card(
+                child: ListTile(
+                    title: Text('Account Settings'),
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage()));
+                  },
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  title: Text('My Wishlist'),
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>WishlistPage()));
+                  },
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  title: Text('Recently viewed'),
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage()));
+                  },
                 ),
               )
             ],

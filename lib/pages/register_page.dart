@@ -108,7 +108,7 @@ class RegisterPage extends StatelessWidget {
                         name: name.text.trim(),
                         gender: selectedGender,
                       ).then((value) async {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LandingPage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LandingPage(initialPage: 0,)));
                         await UserManager.initializeUserId();
                       });
                       //   .then(

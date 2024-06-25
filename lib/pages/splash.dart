@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (UserManager.userId == null) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
     } else {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LandingPage()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LandingPage(initialPage: 0,)));
     }
   }
 

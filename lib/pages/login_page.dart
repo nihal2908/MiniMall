@@ -52,7 +52,7 @@ class LoginPage extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => LandingPage(),
+                        builder: (context) => LandingPage(initialPage: 0,),
                       ),
                     );
                   });

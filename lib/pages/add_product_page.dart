@@ -8,7 +8,9 @@ import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mnnit/firebase/firebase_storage.dart';
 import 'package:mnnit/pages/landing_page.dart';
+import 'package:mnnit/pages/sell_page.dart';
 import 'package:mnnit/widgets/circular_progress.dart';
+import 'package:mnnit/widgets/custom_textformfield.dart';
 
 class AddProductPage extends StatefulWidget {
   AddProductPage({super.key});
@@ -55,82 +57,157 @@ class _AddProductPageState extends State<AddProductPage> {
         title: const Text('Add Product'),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            TextField(
-              controller: name,
-              decoration: const InputDecoration(
-                labelText: 'Name',
-              ),
-            ),
-            DropdownButtonFormField<String>(
-              value: category.isNotEmpty ? category : null,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              items: categories
-                  .map((category) => DropdownMenuItem(
-                value: category,
-                child: Text(category),
-              ))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  category = value!;
-                  if (value == 'Other') {
-                    new_category.clear();
-                  } else {
-                    new_category.text = value;
-                  }
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Required';
-                }
-                return null;
-              },
-            ),
-            if (category == 'Other')
-              TextField(
-                controller: new_category,
-                decoration: const InputDecoration(
-                  labelText: 'Category',
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 200,
+                width: MediaQuery.of(context).size.width,
+                child: ListView.builder(
+                  itemCount: _images.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: Stack(
+                        children: [
+                          Image.file(_images[index] as File, fit: BoxFit.cover),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () {
+                                setState(() {
+                                  _images.removeAt(index);
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
-            TextField(
-              controller: description,
-              decoration: const InputDecoration(
+              IconButton(
+                onPressed: _pickImage,
+                icon: Icon(Icons.add_photo_alternate_outlined, size: 60, color: Colors.black,),
+              ),
+              const SizedBox(height: 10,),
+              CustomTextFormField(
+                labelText: 'Name',
+                controller: name,
+                validator: (value) {
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10,),
+              DropdownButtonFormField<String>(
+                value: category.isNotEmpty ? category : null,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                decoration: InputDecoration(
+                  labelText: '',
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                items: categories
+                    .map((category) => DropdownMenuItem(
+                          value: category,
+                          child: Text(category),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    category = value!;
+                    if (value == 'Other') {
+                      new_category.clear();
+                    } else {
+                      new_category.text = value;
+                    }
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Required';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10,),
+              if (category == 'Other')
+              CustomTextFormField(
+                labelText: 'Category',
+                controller: new_category,
+                validator: (value) {
+                  return null;
+                },
+              ),
+              if (category == 'Other')
+              const SizedBox(height: 10,),
+              CustomTextFormField(
                 labelText: 'Description',
+                controller: description,
+                validator: (value) {
+                  if(value == null || value.isEmpty){
+                    return 'Required filed';
+                  }
+                  else if(value.length > 1000){
+                    return 'Text is too large';
+                  }
+                  return null;
+                },
               ),
-            ),
-            TextField(
-              controller: details,
-              decoration: const InputDecoration(
+              const SizedBox(height: 10,),
+              CustomTextFormField(
                 labelText: 'Details',
+                controller: details,
+                validator: (value) {
+                  if(value == null || value.isEmpty){
+                    return 'Required filed';
+                  }
+                  else if(value.length > 1000){
+                    return 'Text is too large';
+                  }
+                  return null;
+                },
               ),
-            ),
-            TextField(
-              controller: location,
-              decoration: const InputDecoration(
+              const SizedBox(height: 10,),
+              CustomTextFormField(
                 labelText: 'Location',
+                controller: location,
+                validator: (value) {
+                  return null;
+                },
               ),
-            ),
-            TextField(
-              controller: price,
-              decoration: const InputDecoration(
+              const SizedBox(height: 10,),
+              CustomTextFormField(
                 labelText: 'Price',
+                controller: price,
+                keyboard: TextInputType.number,
+                validator: (value) {
+                  if(value == null){
+                    return 'Required field';
+                  }
+                  return null;
+                },
               ),
-            ),
-            const SizedBox(height: 10,),
-            StatefulBuilder(
-              builder: (context, chipState){
+              const SizedBox(
+                height: 10,
+              ),
+              StatefulBuilder(builder: (context, chipState) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ChoiceChip(
                       label: const Text('Negotiable'),
                       selected: negotiable,
-                      onSelected: (_){
-                        chipState((){
+                      onSelected: (_) {
+                        chipState(() {
                           negotiable = true;
                         });
                       },
@@ -139,77 +216,50 @@ class _AddProductPageState extends State<AddProductPage> {
                     ChoiceChip(
                       label: const Text('Non-negotiable'),
                       selected: !negotiable,
-                      onSelected: (_){
-                        chipState((){
+                      onSelected: (_) {
+                        chipState(() {
                           negotiable = false;
                         });
-                    },
+                      },
                       selectedColor: Colors.green,
                     ),
                   ],
                 );
-              }
-            ),
-            const SizedBox(height: 30),
-            SizedBox(
-              height: 200,
-              width: MediaQuery.of(context).size.width,
-              child: ListView.builder(
-                itemCount: _images.length,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: Stack(
-                      children: [
-                        Image.file(_images[index] as File, fit: BoxFit.cover),
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () {
-                              setState(() {
-                                _images.removeAt(index);
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
+              }),
+              const SizedBox(height: 25),
+              ElevatedButton(
+                onPressed: () async {
+                  showProgress(context);
+                  final Firebase storage = Firebase();
+                  await _uploadImages().then((value) async {
+                    _uploadedImageUrls = value;
+                    await storage.addProduct(
+                        name: name.text,
+                        description: description.text,
+                        category: new_category.text.isNotEmpty
+                            ? new_category.text
+                            : category,
+                        price: price.text,
+                        negotiable: negotiable,
+                        details: details.text,
+                        location: location.text,
+                        images:
+                            _uploadedImageUrls //imageControllers.map((image) => image.text).toList(),
+                        );
+                  });
+                  Navigator.pop(context);
+                  showDone(context);
                 },
+                child: const Text('Save'),
               ),
-            ),
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: const Text('Add Image'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                showProgress(context);
-                final Firebase storage = Firebase();
-                await _uploadImages().then((value) async {
-                  _uploadedImageUrls = value;
-                  await storage.addProduct(
-                      name: name.text,
-                      description: description.text,
-                      category: new_category.text.isNotEmpty ? new_category.text : category,
-                      price: price.text,
-                      negotiable: negotiable,
-                      details: details.text,
-                      location: location.text,
-                      images: _uploadedImageUrls//imageControllers.map((image) => image.text).toList(),
-                  );
-                });
-                Navigator.pop(context);
-                showDone(context);
-              },
-              child: const Text('Save'),
-            ),
-            TextButton(onPressed: (){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LandingPage()));
-            }, child: Text('back'))
-          ],
+              // TextButton(
+              //     onPressed: () {
+              //       Navigator.pushReplacement(context,
+              //           MaterialPageRoute(builder: (context) => LandingPage()));
+              //     },
+              //     child: Text('back'))
+            ],
+          ),
         ),
       ),
     );
@@ -220,7 +270,8 @@ class _AddProductPageState extends State<AddProductPage> {
       final pickedFiles = await _picker.pickMultiImage();
       if (pickedFiles != null) {
         setState(() {
-          _images.addAll(pickedFiles.map((pickedFile) => File(pickedFile.path)).toList());
+          _images.addAll(
+              pickedFiles.map((pickedFile) => File(pickedFile.path)).toList());
         });
       }
     } catch (e) {
@@ -230,7 +281,8 @@ class _AddProductPageState extends State<AddProductPage> {
 
   Future<List<String>> _uploadImages() async {
     if (_images.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No images selected')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('No images selected')));
       return [];
     }
 
@@ -241,7 +293,8 @@ class _AddProductPageState extends State<AddProductPage> {
     try {
       for (File image in _images) {
         String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-        Reference ref = FirebaseStorage.instance.ref().child('images').child(fileName);
+        Reference ref =
+            FirebaseStorage.instance.ref().child('images').child(fileName);
         UploadTask uploadTask;
 
         uploadTask = ref.putFile(image as File);
@@ -265,45 +318,56 @@ class _AddProductPageState extends State<AddProductPage> {
       setState(() {
         _isUploading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error uploading images')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error uploading images')));
     }
     return imageUrls;
   }
 
-  void showProgress(BuildContext context){
+  void showProgress(BuildContext context) {
     showDialog(
-      context: context,
-      builder: (context){
-        return AlertDialog(
-          title: Text('Uploading'),
-          content: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CenterIndicator(color: Colors.deepPurple,),
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Uploading...'),
+            content: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CenterIndicator(
+                  color: Colors.deepPurple,
+                ),
+              ],
+            ),
+          );
+        },
+        barrierDismissible: false);
+  }
+
+  void showDone(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Successfully Added'),
+            content: const Text('Refresh your Products Page to sync changes'),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LandingPage(initialPage: 2),
+                        ),
+                      (route) => false,
+                    );
+                  },
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Colors.green),
+                  )),
             ],
-          ),
-        );
-      },
-      barrierDismissible: false
-    );
+          );
+        });
   }
-
-  void showDone(BuildContext context){
-    showDialog(context: context, builder: (context){
-      return AlertDialog(
-        title: const Text('Successfully Added'),
-        content: const Text('Refresh your Products Page to sync changes'),
-        actions: [
-          ElevatedButton(
-              onPressed: (){
-                Navigator.pop(context);
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>AddProductPage()));
-              },
-              child: const Text('OK', style: TextStyle(color: Colors.green),)
-          ),
-        ],
-      );
-    });
-  }
-
 }

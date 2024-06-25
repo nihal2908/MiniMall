@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mnnit/firebase/user_manager.dart';
 import 'package:mnnit/pages/splash.dart';
 import 'package:mnnit/widgets/circular_progress.dart';
@@ -7,6 +8,11 @@ import 'package:mnnit/widgets/circular_progress.dart';
 class ProfilePage extends StatelessWidget {
   ProfilePage({super.key});
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUserData() async {
+    return await firestore.collection('users').doc(UserManager.userId).get();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,15 +22,46 @@ class ProfilePage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              Card(child: ListTile(title: Text('Name'))),
+              FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                future: getUserData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CenterIndicator();
+                  }
+                  if (snapshot.hasError) {
+                    return ListTile(
+                      title: Text('Error: ${snapshot.error}'),
+                    );
+                  }
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return ListTile(
+                      title: Text('No user data found.'),
+                    );
+                  }
+
+                  final userData = snapshot.data!.data() as Map<String, dynamic>;
+
+                  return Card(
+                    child: ListTile(
+                      title: Column(
+                        children: [
+                          Text('Name: ${userData['name']}'),
+                          Text('Email: ${userData['email']}'),
+                          Text('Gender: ${userData['gender']}'),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
               Card(child: ListTile(title: Text('Edit Profile'))),
               Card(
                 child: ListTile(
                   title: Text('Change Password'),
-                  onTap: (){
+                  onTap: () {
                     confirmResetPassword(context);
                   },
                 ),
@@ -61,14 +98,17 @@ class ProfilePage extends StatelessWidget {
             onPressed: () async {
               await auth.signOut();
               UserManager.signOut();
-              showDialog(context: context, builder: (context)=>CenterIndicator());
+              showDialog(
+                context: context,
+                builder: (context) => CenterIndicator(),
+              );
               await Future.delayed(Duration(seconds: 2));
               Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SplashScreen(),
-                  ),
-                  (route) => false
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SplashScreen(),
+                ),
+                (route) => false,
               );
             },
             child: Text(
@@ -88,7 +128,8 @@ class ProfilePage extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Reset Password'),
-        content: Text('You will recieve an password reset email to your registered email-id'),
+        content: Text(
+            'You will receive a password reset email to your registered email-id'),
         actions: [
           ElevatedButton(
             onPressed: () {
@@ -153,28 +194,29 @@ class ProfilePage extends StatelessWidget {
       required void function1(),
       required void function2()}) {
     showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(title),
-            content: Text(content),
-            actions: [
-              ElevatedButton(
-                onPressed: function1,
-                child: Text('Cancel', style: TextStyle(color: Colors.green)),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  auth.signOut();
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => SplashScreen()),
-                      (route) => false);
-                },
-                child: Text('Sign-out', style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          );
-        });
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            ElevatedButton(
+              onPressed: function1,
+              child: Text('Cancel', style: TextStyle(color: Colors.green)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                auth.signOut();
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => SplashScreen()),
+                    (route) => false);
+              },
+              child: Text('Sign-out', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
