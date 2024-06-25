@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mnnit/pages/caht_page.dart';
 import 'package:mnnit/pages/home_page.dart';
-import 'package:mnnit/pages/imageTest.dart';
-import 'package:mnnit/pages/setting_page.dart';
 import 'package:mnnit/pages/sell_page.dart';
+import 'package:mnnit/pages/setting_page.dart';
+import 'package:mnnit/pages/add_product_page.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -12,7 +12,7 @@ class LandingPage extends StatefulWidget {
   State<LandingPage> createState() => _LandingPageState();
 }
 
-List<Widget> Tabs = [HomePage(), ImageUploadPage(), AddProductPage(), ChatPage()];
+List<Widget> Tabs = [HomePage(), SettingPage(), SellPage(), ChatPage()];
 
 class _LandingPageState extends State<LandingPage> {
   int currentTabIndex = 0;

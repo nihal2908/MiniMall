@@ -20,8 +20,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _checkLoginStatus() async {
-    // Display splash screen for at least 2 seconds
-    // await Future.delayed(const Duration(seconds: 2));
     // Ensure Firebase initialization and user ID retrieval are complete
     await UserManager.initializeUserId();
 
