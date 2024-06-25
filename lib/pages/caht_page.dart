@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mnnit/firebase/firebase_auth.dart';
 import 'package:mnnit/firebase/firebase_storage.dart';
+import 'package:mnnit/firebase/user_manager.dart';
 import 'package:mnnit/pages/chat_room.dart';
 import 'package:mnnit/widgets/circular_progress.dart';
 
@@ -23,7 +24,7 @@ class _ChatPageState extends State<ChatPage> {
         title: const Text('Chats'),
       ),
       body: FutureBuilder(
-        future: firestore.collection('users').doc(auth.getCurentUser()!.uid).get(),
+        future: firestore.collection('users').doc(UserManager.userId).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CenterIndicator();

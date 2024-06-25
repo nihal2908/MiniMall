@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:mnnit/widgets/circular_progress.dart';
 
 class Auth {
   //instance
@@ -7,55 +9,86 @@ class Auth {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   //get current user
-  User? getCurentUser() {
-    return auth.currentUser;
-  }
+  // User? getCurentUser() {
+  //   return auth.currentUser;
+  // }
 
   //signout
   Future<void> signOut() async {
     return await auth.signOut();
   }
 
-  //doctor login
-  Future<UserCredential> login(String email, String password) async {
+  // login
+  Future<UserCredential> login({required BuildContext context, required String email, required String password}) async {
     try {
+      _showLoadingDialog(context);
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
           email: email, password: password);
-      // print('credentials sahi hain');
-      // currentUserId = await  userCredential.user!.uid;
-      // currentUserEmail = await userCredential.user!.email!;
-      // print(currentUserId);
-      // print(currentUserId.runtimeType);
-      // print(currentUserEmail);
+      Navigator.of(context).pop();
       return userCredential;
     } on FirebaseAuthException catch (e) {
+      Navigator.of(context).pop();
+      _showErrorDialog(context, e.message!);
       throw Exception(e.code);
     }
   }
 
-  //doctor signup
   Future<UserCredential> register({
+    required BuildContext context,
     required String email,
     required String password,
     required String name,
     required String gender,
   }) async {
     try {
+      _showLoadingDialog(context);
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-      //add it to the list of users
-      firestore.collection('users').doc(userCredential.user!.uid).set({
+      await firestore.collection('users').doc(userCredential.user!.uid).set({
         'uid': userCredential.user!.uid,
         'email': email,
         'name': name,
         'gender': gender,
         'accountDate': FieldValue.serverTimestamp()
       });
+      Navigator.of(context).pop();
       return userCredential;
     } on FirebaseAuthException catch (e) {
+      Navigator.of(context).pop();
+      _showErrorDialog(context, e.message!);
       throw Exception(e.code);
     }
+  }
+
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return CenterIndicator();
+      },
+    );
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> editDocRecord({

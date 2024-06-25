@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mnnit/models/product.dart';
 import 'package:mnnit/pages/category_page.dart';
+import 'package:mnnit/pages/category_search_page.dart';
+import 'package:mnnit/pages/product_search_page.dart';
 import 'package:mnnit/widgets/product_tile.dart';
 
 class HomePage extends StatelessWidget {
@@ -47,7 +49,9 @@ class HomePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Categories', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  IconButton(onPressed: (){}, icon: Icon(Icons.search)),
+                  IconButton(onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>CategorySearchPage()));
+                  }, icon: Icon(Icons.search)),
                 ],
               ),
               const SizedBox(height: 10),
@@ -98,8 +102,10 @@ class HomePage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Recently Added', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  IconButton(onPressed: (){}, icon: Icon(Icons.search)),
+                  const Text('Recently Added Products', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  IconButton(onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductSearchPage()));
+                  }, icon: Icon(Icons.search)),
                 ],
               ),
               const SizedBox(height: 10),

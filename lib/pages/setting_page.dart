@@ -20,8 +20,10 @@ class SettingPage extends StatelessWidget {
                 onTap: (){
                   Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage()));
                 },
-                child: Container(
-                  child: Text('Account Settings'),
+                child: Card(
+                  child: ListTile(
+                      title: Text('Account Settings')
+                  ),
                 ),
               )
             ],

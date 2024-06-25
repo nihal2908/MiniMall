@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mnnit/firebase/user_manager.dart';
 import 'firebase_auth.dart';
 
 class Firebase{
@@ -14,8 +15,8 @@ class Firebase{
   //functions
   Future<void> addToWishlist({required String productID}) async {
     try {
-      final String uid = await auth.getCurentUser()!.uid;
-      await firestore.collection('users').doc(uid).update({
+      // final String uid = await auth.getCurentUser()!.uid;
+      await firestore.collection('users').doc(UserManager.userId).update({
         'wishlist': FieldValue.arrayUnion([productID])
       });
     }
@@ -26,8 +27,8 @@ class Firebase{
 
   Future<void> removeFromWishlist({required String productID}) async {
     try {
-      final String uid = await auth.getCurentUser()!.uid;
-      await firestore.collection('users').doc(uid).update({
+      // final String uid = await auth.getCurentUser()!.uid;
+      await firestore.collection('users').doc(UserManager.userId).update({
         'wishlist': FieldValue.arrayRemove([productID])
       });
     }
@@ -38,9 +39,9 @@ class Firebase{
 
   Future<void> removeProduct({required String productID})async {
     try {
-      final String uid = await auth.getCurentUser()!.uid;
+      // final String uid = await auth.getCurentUser()!.uid;
       await firestore.collection('products').doc(productID).delete();
-      await firestore.collection('users').doc(uid).update({
+      await firestore.collection('users').doc(UserManager.userId).update({
         'products': FieldValue.arrayRemove([productID])
       });
     }
@@ -51,8 +52,8 @@ class Firebase{
 
   Future<void> removeFromHistory({required String productID}) async {
     try {
-      final String uid = await auth.getCurentUser()!.uid;
-      await firestore.collection('users').doc(uid).update({
+      // final String uid = await auth.getCurentUser()!.uid;
+      await firestore.collection('users').doc(UserManager.userId).update({
         'viewed': FieldValue.arrayRemove([productID])
       });
     }
@@ -62,8 +63,8 @@ class Firebase{
   }
 
   void deleteChat({required String id}) async {
-    final String uid = await auth.getCurentUser()!.uid;
-    firestore.collection('users').doc(uid).update({
+    // final String uid = await auth.getCurentUser()!.uid;
+    firestore.collection('users').doc(UserManager.userId).update({
       'chats': FieldValue.arrayRemove([id])
     });
   }
@@ -77,8 +78,8 @@ class Firebase{
     required a
   }) async {
     try {
-      final String uid = await auth.getCurentUser()!.uid;
-      await firestore.collection('products').doc(uid).update({
+      // final String uid = await auth.getCurentUser()!.uid;
+      await firestore.collection('products').doc(UserManager.userId).update({
         'price': newPrice
       });
     }
@@ -126,7 +127,7 @@ class Firebase{
     required String location,
     required List<String> images,
   }) async {
-    final String uid = await auth.getCurentUser()!.uid;
+    // final String uid = await auth.getCurentUser()!.uid;
     final productDoc = await firestore.collection('products').add({
       'name': name,
       'description': description,
@@ -137,10 +138,10 @@ class Firebase{
       'timestamp': FieldValue.serverTimestamp(),
       'location': location,
       'images': images,
-      'owner': uid
+      'owner': UserManager.userId
     });
 
-    await firestore.collection('users').doc(uid).update({
+    await firestore.collection('users').doc(UserManager.userId).update({
       'products': FieldValue.arrayUnion([productDoc.id])
     });
 
