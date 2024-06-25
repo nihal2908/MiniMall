@@ -1,6 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:mnnit/firebase/user_manager.dart';
-import 'package:mnnit/pages/home_page.dart';
 import 'package:mnnit/pages/landing_page.dart';
 import 'package:mnnit/pages/login_page.dart';
 

@@ -1,14 +1,15 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mnnit/firebase/firebase_storage.dart';
 import 'package:mnnit/widgets/circular_progress.dart';
 import 'package:mnnit/models/product.dart';
-import 'package:mnnit/widgets/product_tile.dart';
 import 'package:mnnit/firebase/user_manager.dart';
 
 class WishlistPage extends StatefulWidget {
-  WishlistPage({super.key});
+  const WishlistPage({super.key});
 
   @override
   _WishlistPageState createState() => _WishlistPageState();
@@ -68,14 +69,14 @@ class _WishlistPageState extends State<WishlistPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Remove from Wishlist?'),
-        content: Text('Do you want to remove this product from your wishlist?'),
+        title: const Text('Remove from Wishlist?'),
+        content: const Text('Do you want to remove this product from your wishlist?'),
         actions: [
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text('Cancel', style: TextStyle(color: Colors.green)),
+            child: const Text('Cancel', style: TextStyle(color: Colors.green)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -87,7 +88,7 @@ class _WishlistPageState extends State<WishlistPage> {
               // Navigator.pop(context);
               setState(() {});
             },
-            child: Text('Remove', style: TextStyle(color: Colors.red)),
+            child: const Text('Remove', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -112,7 +113,7 @@ class _WishlistPageState extends State<WishlistPage> {
             );
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
+            return const Center(
               child: Text('Your wishlist is empty.'),
             );
           }
@@ -124,9 +125,9 @@ class _WishlistPageState extends State<WishlistPage> {
                 child: ListTile(
                   leading: Image.network(wishlistProducts[index].images[0]),
                   title: Text(wishlistProducts[index].name),
-                  subtitle: Text('\₹${wishlistProducts[index].price}'),
+                  subtitle: Text('₹${wishlistProducts[index].price}'),
                   trailing: IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
+                    icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () {
                       showDeleteDialog(context, wishlistProducts[index].id);
                     },

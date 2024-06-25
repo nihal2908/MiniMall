@@ -1,19 +1,18 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mnnit/firebase/firebase_storage.dart';
 import 'package:mnnit/pages/landing_page.dart';
-import 'package:mnnit/pages/sell_page.dart';
 import 'package:mnnit/widgets/circular_progress.dart';
 import 'package:mnnit/widgets/custom_textformfield.dart';
 
 class AddProductPage extends StatefulWidget {
-  AddProductPage({super.key});
+  const AddProductPage({super.key});
 
   @override
   State<AddProductPage> createState() => _AddProductPageState();
@@ -24,10 +23,13 @@ class _AddProductPageState extends State<AddProductPage> {
   final TextEditingController price = TextEditingController();
   final TextEditingController description = TextEditingController();
   final TextEditingController details = TextEditingController();
+  // ignore: non_constant_identifier_names
   final TextEditingController new_category = TextEditingController();
   final TextEditingController location = TextEditingController();
   final ImagePicker _picker = ImagePicker();
+  // ignore: prefer_final_fields
   List<File> _images = [];
+  // ignore: unused_field
   bool _isUploading = false;
   List<String> _uploadedImageUrls = [];
   String category = '';
@@ -71,7 +73,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     return Card(
                       child: Stack(
                         children: [
-                          Image.file(_images[index] as File, fit: BoxFit.cover),
+                          Image.file(_images[index], fit: BoxFit.cover),
                           Positioned(
                             top: 8,
                             right: 8,
@@ -92,9 +94,15 @@ class _AddProductPageState extends State<AddProductPage> {
               ),
               IconButton(
                 onPressed: _pickImage,
-                icon: Icon(Icons.add_photo_alternate_outlined, size: 60, color: Colors.black,),
+                icon: const Icon(
+                  Icons.add_photo_alternate_outlined,
+                  size: 60,
+                  color: Colors.black,
+                ),
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               CustomTextFormField(
                 labelText: 'Name',
                 controller: name,
@@ -102,7 +110,9 @@ class _AddProductPageState extends State<AddProductPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               DropdownButtonFormField<String>(
                 value: category.isNotEmpty ? category : null,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -138,45 +148,51 @@ class _AddProductPageState extends State<AddProductPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 10,),
-              if (category == 'Other')
-              CustomTextFormField(
-                labelText: 'Category',
-                controller: new_category,
-                validator: (value) {
-                  return null;
-                },
+              const SizedBox(
+                height: 10,
               ),
               if (category == 'Other')
-              const SizedBox(height: 10,),
+                CustomTextFormField(
+                  labelText: 'Category',
+                  controller: new_category,
+                  validator: (value) {
+                    return null;
+                  },
+                ),
+              if (category == 'Other')
+                const SizedBox(
+                  height: 10,
+                ),
               CustomTextFormField(
                 labelText: 'Description',
                 controller: description,
                 validator: (value) {
-                  if(value == null || value.isEmpty){
+                  if (value == null || value.isEmpty) {
                     return 'Required filed';
-                  }
-                  else if(value.length > 1000){
+                  } else if (value.length > 1000) {
                     return 'Text is too large';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               CustomTextFormField(
                 labelText: 'Details',
                 controller: details,
                 validator: (value) {
-                  if(value == null || value.isEmpty){
+                  if (value == null || value.isEmpty) {
                     return 'Required filed';
-                  }
-                  else if(value.length > 1000){
+                  } else if (value.length > 1000) {
                     return 'Text is too large';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               CustomTextFormField(
                 labelText: 'Location',
                 controller: location,
@@ -184,13 +200,15 @@ class _AddProductPageState extends State<AddProductPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               CustomTextFormField(
                 labelText: 'Price',
                 controller: price,
                 keyboard: TextInputType.number,
                 validator: (value) {
-                  if(value == null){
+                  if (value == null) {
                     return 'Required field';
                   }
                   return null;
@@ -275,7 +293,8 @@ class _AddProductPageState extends State<AddProductPage> {
         });
       }
     } catch (e) {
-      print('Error picking images: $e');
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error picking images: $e')));
     }
   }
 
@@ -297,7 +316,7 @@ class _AddProductPageState extends State<AddProductPage> {
             FirebaseStorage.instance.ref().child('images').child(fileName);
         UploadTask uploadTask;
 
-        uploadTask = ref.putFile(image as File);
+        uploadTask = ref.putFile(image);
 
         TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
         String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -314,12 +333,19 @@ class _AddProductPageState extends State<AddProductPage> {
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Images uploaded successfully')));
     } catch (e) {
-      print('Error uploading images: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error uploading images: $e'),
+        ),
+      );
       setState(() {
         _isUploading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error uploading images')));
+        const SnackBar(
+          content: Text('Error uploading images'),
+        ),
+      );
     }
     return imageUrls;
   }
@@ -329,7 +355,7 @@ class _AddProductPageState extends State<AddProductPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Uploading...'),
+            title: const Text('Uploading...'),
             content: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -355,10 +381,10 @@ class _AddProductPageState extends State<AddProductPage> {
                   onPressed: () {
                     Navigator.pop(context);
                     Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => LandingPage(initialPage: 2),
-                        ),
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LandingPage(initialPage: 2),
+                      ),
                       (route) => false,
                     );
                   },
