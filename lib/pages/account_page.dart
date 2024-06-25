@@ -7,9 +7,15 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile Page'),
+        title: Text('Your Profile'),
       ),
-      body: Center(child: Text('hgf'),),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text('Name'),
+          ],
+        ),
+      ),
     );
   }
 }

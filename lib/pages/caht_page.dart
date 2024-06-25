@@ -50,10 +50,17 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget ChatList({required List<dynamic> ids}){
-    if(ids.isEmpty) return const Center(child: Padding(
-      padding: EdgeInsets.all(20.0),
-      child: Text('You have no recent chats. Chats with product dealers will be displayed here.', style: TextStyle(color: Colors.white),),
-    ),);
+    if(ids.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Text(
+            'You have no recent chats. Chats with product dealers will be displayed here.',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    }
     return FutureBuilder(
         future: firestore.collection('users').where(FieldPath.documentId, whereIn: ids).get(),
         builder: (context, snapshot){
@@ -82,7 +89,7 @@ class _ChatPageState extends State<ChatPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ChatRoomPage(chatUserId: id, name: name,)),
+                    MaterialPageRoute(builder: (context) => ChatRoomPage(recieverId: id, name: name,)),
                   );
                 },
               ),

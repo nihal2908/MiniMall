@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mnnit/pages/caht_page.dart';
 import 'package:mnnit/pages/home_page.dart';
 import 'package:mnnit/pages/imageTest.dart';
-import 'package:mnnit/pages/profile_page.dart';
+import 'package:mnnit/pages/setting_page.dart';
 import 'package:mnnit/pages/sell_page.dart';
 
 class LandingPage extends StatefulWidget {

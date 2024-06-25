@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'home_page.dart';
-import 'login_page.dart';
+import 'package:mnnit/firebase/user_manager.dart';
+import 'package:mnnit/pages/home_page.dart';
+import 'package:mnnit/pages/landing_page.dart';
+import 'package:mnnit/pages/login_page.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,12 +20,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _checkLoginStatus() async {
-    await Future.delayed(const Duration(seconds: 2));  // Display splash screen for 2 seconds
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
+    // Display splash screen for at least 2 seconds
+    // await Future.delayed(const Duration(seconds: 2));
+    // Ensure Firebase initialization and user ID retrieval are complete
+    await UserManager.initializeUserId();
+
+    // Navigate based on login status
+    if (UserManager.userId == null) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
     } else {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LandingPage()));
     }
   }
 
