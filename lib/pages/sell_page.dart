@@ -72,14 +72,9 @@ class SellPage extends StatelessWidget {
                       }
 
                       final productData = snapshot2.data!.data() as Map<String, dynamic>;
-                      final Product product = Product(
+                      final Product product = Product.fromMap(
                         id: productId,
-                        name: productData['name'],
-                        price: productData['price'],
-                        images: List<String>.from(productData['images']),
-                        details: productData['details'],
-                        description: productData['description'],
-                        category: productData['category'],
+                        data: productData
                       );
 
                       return ProductTile(product: product);

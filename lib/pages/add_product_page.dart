@@ -253,12 +253,12 @@ class _AddProductPageState extends State<AddProductPage> {
                     _uploadedImageUrls = value;
                     await storage.addProduct(
                         name: name.text,
-                        description: description.text,
                         category: new_category.text.isNotEmpty
                             ? new_category.text
                             : category,
                         price: price.text,
                         negotiable: negotiable,
+                        description: description.text,
                         details: details.text,
                         location: location.text,
                         images:

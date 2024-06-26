@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mnnit/pages/caht_page.dart';
+import 'package:mnnit/pages/chat_page.dart';
 import 'package:mnnit/pages/home_page.dart';
 import 'package:mnnit/pages/sell_page.dart';
 import 'package:mnnit/pages/setting_page.dart';

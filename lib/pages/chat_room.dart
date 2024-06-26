@@ -154,7 +154,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                // Report chat logic here
+
               },
               child: Text('Report', style: TextStyle(color: Colors.red)),
             ),
@@ -180,7 +180,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                // Block user logic here
+
               },
               child: Text('Block', style: TextStyle(color: Colors.red)),
             ),

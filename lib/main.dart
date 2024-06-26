@@ -17,7 +17,7 @@ void main() async {
     // 1. Debug provider
     // 2. Safety Net provider
     // 3. Play Integrity provider
-    androidProvider: AndroidProvider.debug,
+    androidProvider: AndroidProvider.playIntegrity,
   );
   runApp(const MyApp());
 }

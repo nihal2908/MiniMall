@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mnnit/firebase/firebase_auth.dart';
 import 'package:mnnit/firebase/user_manager.dart';
@@ -9,6 +10,7 @@ import 'package:mnnit/customFunctions/validator_functions.dart';
 
 class LoginPage extends StatelessWidget {
   final Auth auth = Auth();
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   final GlobalKey _LoginFormKey = GlobalKey();
@@ -48,13 +50,15 @@ class LoginPage extends StatelessWidget {
                       email: email.text,
                       password: password.text
                   ).then((value) async {
-                    await UserManager.initializeUserId();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LandingPage(initialPage: 0,),
-                      ),
-                    );
+                    if(value != null) {
+                      await UserManager.initializeUserId();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LandingPage(initialPage: 0,),
+                        ),
+                      );
+                    }
                   });
                 },
                 child: const Text('Login'),

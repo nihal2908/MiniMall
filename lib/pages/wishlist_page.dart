@@ -31,14 +31,9 @@ class _WishlistPageState extends State<WishlistPage> {
         QuerySnapshot productSnapshot = await firestore.collection('products').where(FieldPath.documentId, whereIn: wishlist).get();
         return productSnapshot.docs.map((doc) {
           final data = doc.data() as Map<String, dynamic>;
-          return Product(
+          return Product.fromMap(
             id: doc.id,
-            name: data['name'],
-            price: data['price'],
-            images: List<String>.from(data['images']),
-            details: data['details'],
-            description: data['description'],
-            category: data['category'],
+            data: data,
           );
         }).toList();
       } else {

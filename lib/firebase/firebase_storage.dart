@@ -13,6 +13,13 @@ class Firebase{
   final Auth auth = Auth();
 
   //functions
+  Future<Map<String, dynamic>> getDealerData({required String dealerId}) async {
+    DocumentSnapshot snapshot = await firestore.collection('users').doc(dealerId).get();
+    final data = snapshot.data() as Map<String, dynamic>;
+    return data;
+  }
+
+
   Future<void> addToWishlist({required String productID}) async {
     try {
       // final String uid = await auth.getCurentUser()!.uid;

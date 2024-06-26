@@ -19,12 +19,16 @@ class Auth {
   }
 
   // login
-  Future<UserCredential> login({required BuildContext context, required String email, required String password}) async {
+  Future<UserCredential?> login({required BuildContext context, required String email, required String password}) async {
     try {
       _showLoadingDialog(context);
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
           email: email, password: password);
       Navigator.of(context).pop();
+      if(!userCredential.user!.emailVerified) {
+        _showEmailVerify(context);
+        return null;
+      }
       return userCredential;
     } on FirebaseAuthException catch (e) {
       Navigator.of(context).pop();
@@ -67,6 +71,24 @@ class Auth {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return CenterIndicator();
+      },
+    );
+  }
+
+  void _showEmailVerify(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Email not verified'),
+          content: Text('A verification link is sent to your email. Please verify it\'s you.'),
+          actions: [
+            ElevatedButton(onPressed: (){
+              Navigator.pop(context);
+            }, child: Text('Retry')),
+          ],
+        );
       },
     );
   }

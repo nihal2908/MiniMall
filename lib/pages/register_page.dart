@@ -1,19 +1,14 @@
-// ignore_for_file: must_be_immutable, non_constant_identifier_names
-
-import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mnnit/customFunctions/validator_functions.dart';
 import 'package:mnnit/firebase/firebase_auth.dart';
-import 'package:mnnit/firebase/user_manager.dart';
-import 'package:mnnit/pages/landing_page.dart';
 import 'package:mnnit/pages/login_page.dart';
 import 'package:mnnit/widgets/custom_textformfield.dart';
 import 'package:mnnit/widgets/toggle_theme_button.dart';
 
 class RegisterPage extends StatelessWidget {
   String selectedGender = 'Select Gender';
-  final GlobalKey _RegisterFormKey = GlobalKey();
+  final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>();
   final Auth auth = Auth();
   final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
@@ -34,7 +29,7 @@ class RegisterPage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
-            key: _RegisterFormKey,
+            key: _registerFormKey,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -102,31 +97,30 @@ class RegisterPage extends StatelessWidget {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      // Handle sign up
-                      auth.register(
-                        context: context,
-                        email: email.text.trim(),
-                        password: password.text.trim(),
-                        name: name.text.trim(),
-                        gender: selectedGender,
-                      ).then((value) async {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LandingPage(initialPage: 0,)));
-                        await UserManager.initializeUserId();
-                      });
-                      //   .then(
-                      // (value) {
-                      //   verify(value, context);
-                      // },
-                      // );
+                      if (_registerFormKey.currentState!.validate()) {
+                        // Handle sign up
+                        auth.register(
+                          context: context,
+                          email: email.text.trim(),
+                          password: password.text.trim(),
+                          name: name.text.trim(),
+                          gender: selectedGender,
+                        ).then((value) async {
+                          verifyEmail(context, value);
+                        });
+                      }
                     },
                     child: const Text('Register'),
                   ),
                   TextButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginPage()));
-                      },
-                      child: const Text('Login', style: TextStyle(color: Colors.white),
-                      ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                          context, MaterialPageRoute(builder: (context) => LoginPage()));
+                    },
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ],
               ),
@@ -137,81 +131,27 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  void verify(UserCredential value, BuildContext context) async {
+  void verifyEmail(BuildContext context, UserCredential value) async {
     // Send the verification email initially
-    value.user!.sendEmailVerification();
-
-    int timeleft = 30;
-    bool isVerified = false;
-
-    Timer? countdownTimer;
-    Timer? verificationTimer;
-
-    void startCountdown(Function setState) {
-      countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (timeleft > 0) {
-          setState(() {
-            timeleft--;
-          });
-        } else {
-          timer.cancel();
-        }
-      });
-    }
-
-    void startVerificationCheck(Function setState) {
-      verificationTimer =
-          Timer.periodic(const Duration(seconds: 5), (timer) async {
-            // await value.user!.reload();
-            if (value.user!.emailVerified) {
-              setState(() {
-                isVerified = true;
-              });
-              timer.cancel();
-              countdownTimer?.cancel(); // Cancel the countdown timer if running
-              Navigator.of(context).pop(); // Close the dialog when verified
-            }
-          });
-    }
-
+    await value.user!.sendEmailVerification();
     showDialog(
       context: context,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            if (countdownTimer == null) {
-              startCountdown(setState);
-            }
-
-            if (verificationTimer == null) {
-              startVerificationCheck(setState);
-            }
-
-            return AlertDialog(
-              title: const Text('Please verify your email.'),
-              content: const Text(
-                  'A verification link is sent to your email. Please verify it\'s you.'),
-              actions: [
-                Column(
-                  children: [
-                    MaterialButton(
-                      onPressed: timeleft > 0
-                          ? null
-                          : () {
-                        value.user!.sendEmailVerification();
-                        setState(() {
-                          timeleft = 30;
-                        });
-                        startCountdown(setState);
-                      },
-                      child: const Text('Resend Link'),
-                    ),
-                    Text(timeleft > 0 ? 'Wait for $timeleft seconds' : ''),
-                  ],
-                ),
-              ],
-            );
-          },
+        return AlertDialog(
+          title: const Text('Please verify your email.'),
+          content: const Text('A verification link is sent to your email. Please verify it\'s you.'),
+          actions: [
+            ElevatedButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+              child: const Text('Login'),
+            ),
+          ],
         );
       },
     );

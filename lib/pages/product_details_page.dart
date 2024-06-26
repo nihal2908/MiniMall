@@ -1,15 +1,21 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mnnit/firebase/firebase_storage.dart';
+import 'package:mnnit/firebase/user_manager.dart';
 import 'package:mnnit/models/product.dart';
+import 'package:mnnit/pages/chat_room.dart';
+import 'package:mnnit/widgets/circular_progress.dart';
 import 'package:mnnit/widgets/product_tile.dart';
 
 class ProductDetailsPage extends StatelessWidget {
   final Product product;
-  final String userId; // Add userId to fetch viewing history
   final Firebase storage = Firebase();
+  String? dealerName;
+  bool contact = false;
+  bool buy = false;
 
-  ProductDetailsPage({super.key, required this.product, required this.userId});
+  ProductDetailsPage({super.key, required this.product,});
 
   Future<List<Product>> _fetchRecommendations() async {
     final firestore = FirebaseFirestore.instance;
@@ -22,15 +28,9 @@ class ProductDetailsPage extends StatelessWidget {
 
     return snap.docs.map((prod) {
       final data = prod.data();
-      return Product(
+      return Product.fromMap(
         id: prod.id,
-        name: data['name'],
-        price: data['price'],
-        images: List<String>.from(data['images']),
-        details: data['details'],
-        description: data['description'],
-        category: data['category'],
-        // Add other fields if necessary
+        data: data,
       );
     }).toList();
   }
@@ -38,7 +38,7 @@ class ProductDetailsPage extends StatelessWidget {
   Future<List<Product>> _fetchViewingHistory() async {
     final firestore = FirebaseFirestore.instance;
 
-    final userDoc = await firestore.collection('users').doc(userId).get();
+    final userDoc = await firestore.collection('users').doc(UserManager.userId).get();
     final viewed = Map<String, Timestamp>.from(userDoc['viewed']);
 
     // Convert the map to a list of entries and sort by timestamp
@@ -55,15 +55,9 @@ class ProductDetailsPage extends StatelessWidget {
 
     return querySnapshot.docs.map((doc) {
       final data = doc.data();
-      return Product(
+      return Product.fromMap(
         id: doc.id,
-        name: data['name'],
-        price: data['price'],
-        images: List<String>.from(data['images']),
-        details: data['details'],
-        description: data['description'],
-        category: data['category'],
-        // Add other fields if necessary
+        data: data,
       );
     }).toList();
   }
@@ -107,16 +101,29 @@ class ProductDetailsPage extends StatelessWidget {
               const SizedBox(height: 10),
               Text(product.description, style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  ElevatedButton(onPressed: () {
+              StatefulBuilder(
+                builder: (context, setState) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      buy ? CenterIndicator() : ElevatedButton(onPressed: () {
 
-                  }, child: const Text('Buy Now')),
-                  ElevatedButton(onPressed: () {
-
-                  }, child: const Text('Contact Dealer')),
-                ],
+                      }, child: const Text('Buy Now')),
+                      contact ? CenterIndicator() :
+                      ElevatedButton(onPressed: () async {
+                        setState((){
+                          contact = true;
+                        });
+                        final data = await storage.getDealerData(dealerId: product.owner);
+                        dealerName = data['name'];
+                        setState((){
+                          contact = false;
+                        });
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatRoomPage(recieverId: product.owner, name: dealerName!)));
+                      }, child: const Text('Contact Dealer')),
+                    ],
+                  );
+                }
               ),
               const SizedBox(height: 20),
               const Text('Recommended Products', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -125,7 +132,7 @@ class ProductDetailsPage extends StatelessWidget {
                 future: _fetchRecommendations(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return CenterIndicator();
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {

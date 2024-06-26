@@ -11,7 +11,7 @@ class ProductTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailsPage(product: product, userId: 'JRuhTvwywdSeBirkl1tO',)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailsPage(product: product,)));
       },
       child: Card(
         child: ListTile(

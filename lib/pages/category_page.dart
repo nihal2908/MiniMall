@@ -23,15 +23,9 @@ class CategoryPage extends StatelessWidget {
 
     return productsSnapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
-      return Product(
+      return Product.fromMap(
         id: doc.id,
-        name: data['name'],
-        price: data['price'],
-        images: List<String>.from(data['images']),
-        details: data['details'],
-        description: data['description'],
-        category: data['category']
-        // Add other fields if necessary
+        data: data,
       );
     }).toList();
   }
