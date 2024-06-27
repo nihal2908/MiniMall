@@ -128,9 +128,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                // Clear chat logic here
+
               },
-              child: Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text('Clear', style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -215,27 +215,46 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget buildMessageItem(DocumentSnapshot doc, BuildContext context) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    bool received = data['receiver'] == UserManager.userId!;
+    bool received = data['reciever'] == UserManager.userId!;
     Color sendBubble = (Theme.of(context).brightness == Brightness.light) ? Colors.green.shade200 : Colors.green.shade800;
     Color recBubble = (Theme.of(context).brightness == Brightness.light) ? Colors.grey.shade200 : Colors.grey.shade800;
 
-    return Container(
-      alignment: received ? Alignment.centerLeft : Alignment.centerRight,
+    return GestureDetector(
       child: Container(
-        decoration: BoxDecoration(
-          color: received ? recBubble : sendBubble,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5, top: 5),
-        margin: EdgeInsets.all(3),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              data['message'],
-              style: TextStyle(fontSize: 17),
-            ),
-          ],
+        alignment: received ? Alignment.centerLeft : Alignment.centerRight,
+        child: received ? Container(
+          decoration: BoxDecoration(
+            color: recBubble,
+            borderRadius: BorderRadius.only(topRight: Radius.circular(15), topLeft: Radius.circular(15), bottomRight: Radius.circular(15)),
+          ),
+          padding: EdgeInsets.only(left: 10, right: 10, bottom: 5, top: 5),
+          margin: EdgeInsets.all(3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                data['message'],
+                style: TextStyle(fontSize: 17),
+              ),
+            ],
+          ),
+        ) :
+        Container(
+          decoration: BoxDecoration(
+            color: sendBubble,
+            borderRadius: BorderRadius.only(topRight: Radius.circular(15), topLeft: Radius.circular(15), bottomLeft: Radius.circular(15)),
+          ),
+          padding: EdgeInsets.only(left: 10, right: 10, bottom: 5, top: 5),
+          margin: EdgeInsets.all(3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                data['message'],
+                style: TextStyle(fontSize: 17),
+              ),
+            ],
+          ),
         ),
       ),
     );

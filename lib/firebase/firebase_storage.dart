@@ -32,6 +32,19 @@ class Firebase{
     }
   }
 
+  Future<void> addToHistory({required String productID}) async {
+    try {
+      // final String uid = await auth.getCurentUser()!.uid;
+      await firestore.collection('users').doc(UserManager.userId).update({
+        'viewed.${productID}': FieldValue.serverTimestamp(),
+      });
+    }
+    catch(e){
+      print(e);
+    }
+  }
+
+
   Future<void> removeFromWishlist({required String productID}) async {
     try {
       // final String uid = await auth.getCurentUser()!.uid;
@@ -44,13 +57,28 @@ class Firebase{
     }
   }
 
-  Future<void> removeProduct({required String productID})async {
+  Future<void> deleteProduct({required String productID})async {
     try {
       // final String uid = await auth.getCurentUser()!.uid;
       await firestore.collection('products').doc(productID).delete();
       await firestore.collection('users').doc(UserManager.userId).update({
         'products': FieldValue.arrayRemove([productID])
       });
+    }
+    catch(e){
+      print(e);
+    }
+  }
+
+  Future<void> hideProduct({required String productID})async {
+    try {
+      // final String uid = await auth.getCurentUser()!.uid;
+      await firestore.collection('products').doc(productID).update({
+        'status': 'hidden'
+      });
+      // await firestore.collection('users').doc(UserManager.userId).update({
+      //   'products': FieldValue.arrayRemove([productID])
+      // });
     }
     catch(e){
       print(e);
@@ -130,7 +158,6 @@ class Firebase{
     required String category,
     required String price,
     required bool negotiable,
-    required String details,
     required String location,
     required List<String> images,
   }) async {
@@ -138,13 +165,14 @@ class Firebase{
     final productDoc = await firestore.collection('products').add({
       'name': name,
       'description': description,
-      'details': details,
       'category': category,
       'price': double.parse(price),
       'negotiable': negotiable,
       'timestamp': FieldValue.serverTimestamp(),
       'location': location,
       'images': images,
+      'status': 'unsold',
+      'views': 0,
       'owner': UserManager.userId
     });
 

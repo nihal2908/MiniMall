@@ -89,10 +89,21 @@ class RegisterPage extends StatelessWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                  CustomTextFormField(
-                    labelText: 'Password',
+                  CustomPasswordField(
+                    labelText: 'Create Password',
                     controller: password,
                     validator: passwordValidator,
+                  ),
+                  const SizedBox(height: 6,),
+                  Text('*The Password must contain atleast 8 characters.\n'
+                      '*The Password must contain atleast one Uppercase alphabet.\n'
+                      '*The Password must contain atleast one Lowercase alphabet.\n'
+                      '*The Password must contain atleast one Special character.\n'
+                      '*The Password must contain atleast one number.',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 7
+                    ),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
@@ -139,7 +150,7 @@ class RegisterPage extends StatelessWidget {
       builder: (context) {
         return AlertDialog(
           title: const Text('Please verify your email.'),
-          content: const Text('A verification link is sent to your email. Please verify it\'s you.'),
+          content: const Text('Please verify your account by clicking the verification link sent to your gmail. After verifying, try to login with your credentials.'),
           actions: [
             ElevatedButton(
               onPressed: (){
@@ -149,7 +160,7 @@ class RegisterPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => LoginPage()),
                 );
               },
-              child: const Text('Login'),
+              child: const Text('Go to Login'),
             ),
           ],
         );

@@ -22,7 +22,6 @@ class _AddProductPageState extends State<AddProductPage> {
   final TextEditingController name = TextEditingController();
   final TextEditingController price = TextEditingController();
   final TextEditingController description = TextEditingController();
-  final TextEditingController details = TextEditingController();
   // ignore: non_constant_identifier_names
   final TextEditingController new_category = TextEditingController();
   final TextEditingController location = TextEditingController();
@@ -34,7 +33,7 @@ class _AddProductPageState extends State<AddProductPage> {
   List<String> _uploadedImageUrls = [];
   String category = '';
   List<String> categories = [];
-  bool negotiable = false;
+  bool fixed_price = false;
 
   @override
   void initState() {
@@ -47,7 +46,7 @@ class _AddProductPageState extends State<AddProductPage> {
     final querySnapshot = await firestore.collection('categories').get();
     setState(() {
       categories = querySnapshot.docs.map((doc) => doc.id).toList();
-      categories.add('Other');
+      categories.add('Other(Specify)');
       category = categories[0];
     });
   }
@@ -63,7 +62,7 @@ class _AddProductPageState extends State<AddProductPage> {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              SizedBox(
+              if (_images.isNotEmpty) SizedBox(
                 height: 200,
                 width: MediaQuery.of(context).size.width,
                 child: ListView.builder(
@@ -94,11 +93,17 @@ class _AddProductPageState extends State<AddProductPage> {
               ),
               IconButton(
                 onPressed: _pickImage,
-                icon: const Icon(
-                  Icons.add_photo_alternate_outlined,
-                  size: 60,
-                  color: Colors.black,
+                icon: const Column(
+                  children: [
+                    Icon(
+                      Icons.add_photo_alternate_outlined,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                    Text('Add Product Image', style: TextStyle(color: Colors.white),)
+                  ],
                 ),
+
               ),
               const SizedBox(
                 height: 10,
@@ -134,7 +139,7 @@ class _AddProductPageState extends State<AddProductPage> {
                 onChanged: (value) {
                   setState(() {
                     category = value!;
-                    if (value == 'Other') {
+                    if (value == 'Other(Specify)') {
                       new_category.clear();
                     } else {
                       new_category.text = value;
@@ -151,7 +156,7 @@ class _AddProductPageState extends State<AddProductPage> {
               const SizedBox(
                 height: 10,
               ),
-              if (category == 'Other')
+              if (category == 'Other(Specify)')
                 CustomTextFormField(
                   labelText: 'Category',
                   controller: new_category,
@@ -166,10 +171,11 @@ class _AddProductPageState extends State<AddProductPage> {
               CustomTextFormField(
                 labelText: 'Description',
                 controller: description,
+                maxlines: null,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Required filed';
-                  } else if (value.length > 1000) {
+                  } else if (value.length > 2000) {
                     return 'Text is too large';
                   }
                   return null;
@@ -177,18 +183,6 @@ class _AddProductPageState extends State<AddProductPage> {
               ),
               const SizedBox(
                 height: 10,
-              ),
-              CustomTextFormField(
-                labelText: 'Details',
-                controller: details,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Required filed';
-                  } else if (value.length > 1000) {
-                    return 'Text is too large';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(
                 height: 10,
@@ -217,33 +211,21 @@ class _AddProductPageState extends State<AddProductPage> {
               const SizedBox(
                 height: 10,
               ),
-              StatefulBuilder(builder: (context, chipState) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ChoiceChip(
-                      label: const Text('Negotiable'),
-                      selected: negotiable,
-                      onSelected: (_) {
-                        chipState(() {
-                          negotiable = true;
-                        });
-                      },
-                      selectedColor: Colors.green,
-                    ),
-                    ChoiceChip(
-                      label: const Text('Non-negotiable'),
-                      selected: !negotiable,
-                      onSelected: (_) {
-                        chipState(() {
-                          negotiable = false;
-                        });
-                      },
-                      selectedColor: Colors.green,
-                    ),
-                  ],
-                );
-              }),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ChoiceChip(
+                    label: const Text('Fixed Price'),
+                    selected: fixed_price,
+                    onSelected: (value) {
+                      setState(() {
+                        fixed_price = value;
+                      });
+                    },
+                    selectedColor: Colors.green,
+                  ),
+                ],
+              ),
               const SizedBox(height: 25),
               ElevatedButton(
                 onPressed: () async {
@@ -257,9 +239,8 @@ class _AddProductPageState extends State<AddProductPage> {
                             ? new_category.text
                             : category,
                         price: price.text,
-                        negotiable: negotiable,
+                        negotiable: fixed_price,
                         description: description.text,
-                        details: details.text,
                         location: location.text,
                         images:
                             _uploadedImageUrls //imageControllers.map((image) => image.text).toList(),
@@ -283,19 +264,70 @@ class _AddProductPageState extends State<AddProductPage> {
     );
   }
 
+  // Future<void> _pickImage() async {
+  //   try {
+  //     final pickedFiles = await _picker.pickMultiImage(limit: 5, imageQuality: 50);
+  //     if (pickedFiles != null) {
+  //       setState(() {
+  //         _images.addAll(
+  //             pickedFiles.map((pickedFile) => File(pickedFile.path)).toList());
+  //       });
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(SnackBar(content: Text('Error picking images: $e')));
+  //   }
+  // }
+
   Future<void> _pickImage() async {
-    try {
-      final pickedFiles = await _picker.pickMultiImage();
-      if (pickedFiles != null) {
-        setState(() {
-          _images.addAll(
-              pickedFiles.map((pickedFile) => File(pickedFile.path)).toList());
-        });
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error picking images: $e')));
-    }
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Gallery'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  try {
+                    final pickedFiles = await _picker.pickMultiImage(limit: 5, imageQuality: 70);
+                    if (pickedFiles != null) {
+                      setState(() {
+                        _images.addAll(
+                            pickedFiles.map((pickedFile) => File(pickedFile.path)).toList());
+                      });
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text('Error picking images: $e')));
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_camera),
+                title: Text('Camera'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  try {
+                    final pickedFile = await _picker.pickImage(source: ImageSource.camera,imageQuality: 50);
+                    if (pickedFile != null) {
+                      setState(() {
+                        _images.add(File(pickedFile.path));
+                      });
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text('Error capturing image: $e')));
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<List<String>> _uploadImages() async {
@@ -356,7 +388,7 @@ class _AddProductPageState extends State<AddProductPage> {
         builder: (context) {
           return AlertDialog(
             title: const Text('Uploading...'),
-            content: Row(
+            content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 CenterIndicator(

@@ -42,10 +42,10 @@ class HomePage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Categories', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text('Categories', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                   IconButton(onPressed: (){
                     Navigator.push(context, MaterialPageRoute(builder: (context)=>CategorySearchPage()));
-                  }, icon: Icon(Icons.search)),
+                  }, icon: Icon(Icons.search, color: Colors.white,)),
                 ],
               ),
               const SizedBox(height: 10),
@@ -96,10 +96,10 @@ class HomePage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Recently Added Products', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text('Recently Added Products', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                   IconButton(onPressed: (){
                     Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductSearchPage()));
-                  }, icon: Icon(Icons.search)),
+                  }, icon: Icon(Icons.search, color: Colors.white,)),
                 ],
               ),
               const SizedBox(height: 10),

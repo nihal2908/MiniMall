@@ -5,6 +5,7 @@ import 'package:mnnit/firebase/firebase_storage.dart';
 import 'package:mnnit/firebase/user_manager.dart';
 import 'package:mnnit/models/product.dart';
 import 'package:mnnit/pages/chat_room.dart';
+import 'package:mnnit/pages/photo_view_page.dart';
 import 'package:mnnit/widgets/circular_progress.dart';
 import 'package:mnnit/widgets/product_tile.dart';
 
@@ -19,11 +20,12 @@ class ProductDetailsPage extends StatelessWidget {
 
   Future<List<Product>> _fetchRecommendations() async {
     final firestore = FirebaseFirestore.instance;
+    final DocumentSnapshot docSnapshot = await firestore
+        .collection('categories').doc(product.category).get();
 
-    final docSnapshot = await firestore
-        .collection('categories').doc(product.category)
-        .get();
-    final prods = List<String>.from(docSnapshot.data()!['products']);
+    final List<String> prods = List<String>.from(docSnapshot['products']);
+    print(prods.toString());
+    print('jdhf');
     final snap = await firestore.collection('products').where(FieldPath.documentId, whereIn: prods).get();
 
     return snap.docs.map((prod) {
@@ -40,7 +42,12 @@ class ProductDetailsPage extends StatelessWidget {
 
     final userDoc = await firestore.collection('users').doc(UserManager.userId).get();
     final viewed = Map<String, Timestamp>.from(userDoc['viewed']);
+    if((userDoc as Map<String, dynamic>).containsKey('wishlist'))
+    final liked = userDoc['wishlist'] as List<String>;
 
+    // adding current prod to history
+    await storage.addToHistory(productID: product.id);
+    if(viewed.isEmpty) return [];
     // Convert the map to a list of entries and sort by timestamp
     final sortedEntries = viewed.entries.toList()
       ..sort((a, b) => (b.value).compareTo(a.value));
@@ -71,12 +78,12 @@ class ProductDetailsPage extends StatelessWidget {
           IconButton(onPressed: () async {
             await storage.addToWishlist(productID: product.id);
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Product added to Wishlist')));
-          }, icon: Icon(Icons.add_shopping_cart))
+          }, icon: Icon(Icons.favorite_border))
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -87,7 +94,20 @@ class ProductDetailsPage extends StatelessWidget {
                   children: product.images.map((image) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: Image.network(image),
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context)=>ImageGallery(
+                                    imageUrls: product.images,
+                                    initialIndex: product.images.indexOf(image),
+                                  ),
+                              ),
+                          );
+                        },
+                        child: Image.network(image)
+                      ),
                     );
                   }).toList(),
                 ),
@@ -96,8 +116,6 @@ class ProductDetailsPage extends StatelessWidget {
               Text(product.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
               Text('\₹${product.price}', style: const TextStyle(fontSize: 20, color: Colors.green)),
-              const SizedBox(height: 10),
-              Text(product.details, style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 10),
               Text(product.description, style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 20),
@@ -135,7 +153,7 @@ class ProductDetailsPage extends StatelessWidget {
                     return CenterIndicator();
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  } else if (!snapshot.hasData || snapshot.data==null ||snapshot.data!.isEmpty) {
                     return const Center(child: Text('No recommendations found.'));
                   } else {
                     return Column(
@@ -151,7 +169,7 @@ class ProductDetailsPage extends StatelessWidget {
                 future: _fetchViewingHistory(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return CenterIndicator();
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {

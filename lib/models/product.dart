@@ -5,7 +5,6 @@ class Product {
   final String name;
   final double price;
   final List<String> images;
-  final String details;
   final String description;
   final String category;
   final bool negotiable;
@@ -18,7 +17,6 @@ class Product {
     required this.name,
     required this.price,
     required this.images,
-    required this.details,
     required this.description,
     required this.category,
     required this.negotiable,
@@ -33,7 +31,6 @@ class Product {
       name: data['name'],
       price: data['price'],
       images: List<String>.from(data['images']),
-      details: data['details'],
       description: data['description'],
       category: data['category'],
       negotiable: data['negotiable'],

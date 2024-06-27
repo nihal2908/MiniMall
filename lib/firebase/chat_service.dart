@@ -19,6 +19,14 @@ class ChatService{
     ids.sort();
     String chatRoomID = ids.join('_');
 
+    // add each others ids to each others
+    firestore.collection('users').doc(senderId).update({
+      'chats': FieldValue.arrayUnion([recieverId])
+    });
+    firestore.collection('users').doc(recieverId).update({
+      'chats': FieldValue.arrayUnion([senderId])
+    });
+
     //add new message to database
     await firestore
         .collection('chat_rooms')

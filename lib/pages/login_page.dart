@@ -13,7 +13,7 @@ class LoginPage extends StatelessWidget {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
-  final GlobalKey _LoginFormKey = GlobalKey();
+  final GlobalKey<FormState> _LoginFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -36,30 +36,31 @@ class LoginPage extends StatelessWidget {
                 validator: emailValidator,
               ),
               SizedBox(height: 20,),
-              CustomTextFormField(
+              CustomPasswordField(
                 labelText: 'Password',
                 controller: password,
-                obscured: true,
                 validator: passwordValidator,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  await auth.login(
-                      context: context,
-                      email: email.text,
-                      password: password.text
-                  ).then((value) async {
-                    if(value != null) {
-                      await UserManager.initializeUserId();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LandingPage(initialPage: 0,),
-                        ),
-                      );
-                    }
-                  });
+                  if(_LoginFormKey.currentState!.validate()) {
+                    await auth.login(
+                        context: context,
+                        email: email.text,
+                        password: password.text
+                    ).then((value) async {
+                      if (value != null) {
+                        await UserManager.initializeUserId();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LandingPage(initialPage: 0,),
+                          ),
+                        );
+                      }
+                    });
+                  }
                 },
                 child: const Text('Login'),
               ),

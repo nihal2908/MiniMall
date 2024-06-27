@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mnnit/pages/account_page.dart';
+import 'package:mnnit/pages/recently_viewed_page.dart';
 import 'package:mnnit/pages/wishlist_page.dart';
 
 class SettingPage extends StatelessWidget {
@@ -37,7 +38,7 @@ class SettingPage extends StatelessWidget {
                 child: ListTile(
                   title: Text('Recently viewed'),
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>RecentlyViewedPage()));
                   },
                 ),
               )

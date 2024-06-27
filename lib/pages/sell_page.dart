@@ -1,13 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mnnit/customFunctions/navigator_functions.dart';
 import 'package:mnnit/firebase/user_manager.dart';
 import 'package:mnnit/models/product.dart';
 import 'package:mnnit/pages/add_product_page.dart';
 import 'package:mnnit/widgets/circular_progress.dart';
+import 'package:mnnit/widgets/my_product_tile.dart';
 import 'package:mnnit/widgets/product_tile.dart';
 
-class SellPage extends StatelessWidget {
+class SellPage extends StatefulWidget {
   SellPage({super.key});
+
+  @override
+  State<SellPage> createState() => _SellPageState();
+}
+
+class _SellPageState extends State<SellPage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
@@ -15,15 +23,6 @@ class SellPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Products'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => AddProductPage()));
-            },
-            icon: const Icon(Icons.add_box),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -77,12 +76,24 @@ class SellPage extends StatelessWidget {
                         data: productData
                       );
 
-                      return ProductTile(product: product);
+                      return MyProductTile(product: product, widget: SellPage(), reload: setState,);
                     },
                   );
                 }).toList(),
               );
             },
+          ),
+        ),
+      ),
+      bottomNavigationBar: SizedBox(
+        height: 50,
+        width: MediaQuery.of(context).size.width,
+        child: GestureDetector(
+          onTap: (){
+            push(context: context, page: AddProductPage());
+          },
+          child: Card(
+              child: Center(child: Text('Add Product', style: TextStyle(fontSize: 20),))
           ),
         ),
       ),
