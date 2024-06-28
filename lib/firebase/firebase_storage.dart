@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mnnit/firebase/user_manager.dart';
 import 'firebase_auth.dart';
 
@@ -13,18 +16,23 @@ class Firebase{
   final Auth auth = Auth();
 
   //functions
-  Future<Map<String, dynamic>> getDealerData({required String dealerId}) async {
-    DocumentSnapshot snapshot = await firestore.collection('users').doc(dealerId).get();
-    final data = snapshot.data() as Map<String, dynamic>;
-    return data;
-  }
-
-
   Future<void> addToWishlist({required String productID}) async {
     try {
       // final String uid = await auth.getCurentUser()!.uid;
       await firestore.collection('users').doc(UserManager.userId).update({
         'wishlist': FieldValue.arrayUnion([productID])
+      });
+    }
+    catch(e){
+      print(e);
+    }
+  }
+
+  Future<void> removeFromWishlist({required String productID}) async {
+    try {
+      // final String uid = await auth.getCurentUser()!.uid;
+      await firestore.collection('users').doc(UserManager.userId).update({
+        'wishlist': FieldValue.arrayRemove([productID])
       });
     }
     catch(e){
@@ -44,18 +52,18 @@ class Firebase{
     }
   }
 
-
-  Future<void> removeFromWishlist({required String productID}) async {
+  Future<void> removeFromHistory({required String productID}) async {
     try {
       // final String uid = await auth.getCurentUser()!.uid;
       await firestore.collection('users').doc(UserManager.userId).update({
-        'wishlist': FieldValue.arrayRemove([productID])
+        'viewed': FieldValue.arrayRemove([productID])
       });
     }
     catch(e){
       print(e);
     }
   }
+
 
   Future<void> deleteProduct({required String productID})async {
     try {
@@ -85,71 +93,30 @@ class Firebase{
     }
   }
 
-  Future<void> removeFromHistory({required String productID}) async {
-    try {
-      // final String uid = await auth.getCurentUser()!.uid;
-      await firestore.collection('users').doc(UserManager.userId).update({
-        'viewed': FieldValue.arrayRemove([productID])
-      });
-    }
-    catch(e){
-      print(e);
-    }
-  }
-
-  void deleteChat({required String id}) async {
-    // final String uid = await auth.getCurentUser()!.uid;
-    firestore.collection('users').doc(UserManager.userId).update({
-      'chats': FieldValue.arrayRemove([id])
-    });
-  }
-
   Future<void> updateProduct({
     required String productID,
     required String name,
-    required double newPrice,
+    required double price,
     required String description,
-    required String details,
-    required a
+    required bool negotiable,
+    required String location,
+    required List<String> images,
   }) async {
     try {
       // final String uid = await auth.getCurentUser()!.uid;
-      await firestore.collection('products').doc(UserManager.userId).update({
-        'price': newPrice
+      await firestore.collection('products').doc(productID).update({
+        'name': name,
+        'description': description,
+        'price': price,
+        'negotiable': negotiable,
+        'location': location,
+        'images': images,
+        'edited': true
       });
     }
     catch(e){
       print(e);
     }
-  }
-
-  Future<List<String>> uploadImages(List<dynamic> _images) async {
-    List<String> imageUrls = [];
-    try{
-      for (var image in _images) {
-        String fileName = DateTime.now().millisecondsSinceEpoch.toString()+'.jpg';
-        Reference ref = FirebaseStorage.instance.ref().child('images').child(fileName);
-        UploadTask uploadTask;
-
-        if (kIsWeb) {
-          uploadTask = ref.putData(image);
-        } else {
-          uploadTask = ref.putFile(image as File);
-        }
-
-        TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
-        String downloadUrl = await snapshot.ref.getDownloadURL();
-        print(downloadUrl);
-        imageUrls.add(downloadUrl);
-      }
-
-      // await FirebaseFirestore.instance.collection('images').add({'urls': imageUrls});
-      return imageUrls;
-    }
-    catch(e){
-      print(e);
-    }
-    return imageUrls;
   }
 
   Future<void> addProduct({
@@ -185,6 +152,36 @@ class Firebase{
       'image': images[0],
       'products': FieldValue.arrayUnion([productDoc.id]),
     }, SetOptions(merge: true));
+  }
+
+
+  Future<List<String>> uploadImages(List<dynamic> _images) async {
+    List<String> imageUrls = [];
+    try{
+      for (var image in _images) {
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString()+'.jpg';
+        Reference ref = FirebaseStorage.instance.ref().child('images').child(fileName);
+        UploadTask uploadTask;
+
+        if (kIsWeb) {
+          uploadTask = ref.putData(image);
+        } else {
+          uploadTask = ref.putFile(image as File);
+        }
+
+        TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
+        String downloadUrl = await snapshot.ref.getDownloadURL();
+        print(downloadUrl);
+        imageUrls.add(downloadUrl);
+      }
+
+      // await FirebaseFirestore.instance.collection('images').add({'urls': imageUrls});
+      return imageUrls;
+    }
+    catch(e){
+      print(e);
+    }
+    return imageUrls;
   }
 
 }

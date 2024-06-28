@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mnnit/firebase/chat_service.dart';
 import 'package:mnnit/firebase/firebase_auth.dart';
 import 'package:mnnit/firebase/firebase_storage.dart';
 import 'package:mnnit/firebase/user_manager.dart';
@@ -17,6 +18,7 @@ class _ChatPageState extends State<ChatPage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final Auth auth = Auth();
   final Firebase storage = Firebase();
+  final ChatService chatService = ChatService();
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +129,7 @@ class _ChatPageState extends State<ChatPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                storage.deleteChat(id: id);
+                chatService.deleteChatRoom(id: id);
                 setState(() {});
                 Navigator.pop(context);
               },

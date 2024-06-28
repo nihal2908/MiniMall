@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mnnit/firebase/chat_service.dart';
 import 'package:mnnit/firebase/firebase_storage.dart';
 import 'package:mnnit/firebase/user_manager.dart';
 import 'package:mnnit/models/product.dart';
@@ -12,6 +13,7 @@ import 'package:mnnit/widgets/product_tile.dart';
 class ProductDetailsPage extends StatelessWidget {
   final Product product;
   final Firebase storage = Firebase();
+  final ChatService chatService = ChatService();
   String? dealerName;
   bool contact = false;
   bool buy = false;
@@ -132,7 +134,7 @@ class ProductDetailsPage extends StatelessWidget {
                         setState((){
                           contact = true;
                         });
-                        final data = await storage.getDealerData(dealerId: product.owner);
+                        final data = await chatService.buildContact(dealerId: product.owner);
                         dealerName = data['name'];
                         setState((){
                           contact = false;
