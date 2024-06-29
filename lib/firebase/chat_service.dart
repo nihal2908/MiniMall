@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mnnit/customFunctions/navigator_functions.dart';
 import 'package:mnnit/firebase/user_manager.dart';
 
 class ChatService{
@@ -91,21 +92,44 @@ class ChatService{
   }
 
   Future<void> reportChat({required String chatRoomId, required BuildContext context, required String reason}) async {
-    await firestore.collection('chat_rooms').doc(chatRoomId).update({
-      'reported': true,
-      'reporter': UserManager.userId
-    });
-    DocumentReference ref = await firestore.collection('reported').doc(chatRoomId);
-    ref.set({
-      'timestamp': FieldValue.serverTimestamp(),
-      'reporter': UserManager.userId,
-      'reason': reason
-    });
+    try{
+      await firestore
+          .collection('chat_rooms')
+          .doc(chatRoomId)
+          .update({'reported': true, 'reporter': UserManager.userId});
+      DocumentReference ref =
+          await firestore.collection('reported').doc(chatRoomId);
+      ref.set({
+        'timestamp': FieldValue.serverTimestamp(),
+        'reporter': UserManager.userId,
+        'reason': reason
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Chat reported successfully')));
+    } catch (e){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong')));
+    }
   }
 
   Future<void> showReasonDialog({required BuildContext context, required String chatRoomId}) async {
-    List<String> reasons = ['iwef', 'ishfd'];
-    String? selectedValue;
+    List<String> reasons = [
+      "Harassment or Bullying",
+      "Hate Speech or Discrimination",
+      "Spamming or Unwanted Advertising",
+      "Sharing Inappropriate or Explicit Content",
+      "Impersonation or Identity Theft",
+      "Fraud or Scams",
+      "Threats or Intimidation",
+      "Sharing Sensitive Personal Information",
+      "Misinformation or Fake News",
+      "Phishing Attempts",
+      "Violation of Community Guidelines",
+      "Offensive Language or Profanity",
+      "Soliciting Personal Information",
+      "Illegal Activities",
+      "Unwanted Contact or Stalking"
+    ];
+    String selectedValue = reasons[0];
     showDialog(
         context: context,
         builder: (context){
@@ -146,7 +170,9 @@ class ChatService{
               ),
               ElevatedButton(
                 onPressed: () async {
-                  await reportChat(chatRoomId: chatRoomId, context: context, reason: selectedValue!);
+                  await reportChat(chatRoomId: chatRoomId, context: context, reason: selectedValue);
+                  pop(context: context);
+
                 },
                 child: Text('Report', style: TextStyle(color: Colors.red)),
               ),

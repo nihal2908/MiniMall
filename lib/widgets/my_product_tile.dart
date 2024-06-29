@@ -7,9 +7,8 @@ import 'package:mnnit/pages/my_product_detail_page.dart';
 
 class MyProductTile extends StatelessWidget {
   final Product product;
-  final StatefulWidget widget;
   final void Function(void Function()) reload;
-  const MyProductTile({required this.product, required this.widget, required this.reload});
+  const MyProductTile({required this.product, required this.reload});
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +85,7 @@ class MyProductTile extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               await _firebase.deleteProduct(productID: product.id);
+              pop(context: context);
               pop(context: context);
               reload((){});
             },

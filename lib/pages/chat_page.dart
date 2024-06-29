@@ -53,7 +53,10 @@ class _ChatPageState extends State<ChatPage> {
 
           final List<dynamic> ids = userDoc['chats'];
           return SingleChildScrollView(
-            child: ChatList(ids: ids),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: ChatList(ids: ids),
+            ),
           );
         },
       ),
@@ -87,8 +90,7 @@ class _ChatPageState extends State<ChatPage> {
           children: snapshot.data!.docs.map((element) {
             String name = element.data()['name'];
             String id = element.id;
-            return Container(
-              color: Colors.grey.shade200,
+            return Card(
               child: ListTile(
                 title: Text(name),
                 trailing: IconButton(
@@ -119,7 +121,7 @@ class _ChatPageState extends State<ChatPage> {
       builder: (context) {
         return AlertDialog(
           title: Text('Delete Conversation?'),
-          content: Text('This will permanently delete all the conversation with this user!'),
+          content: Text('This will permanently delete all the conversation for both the users!'),
           actions: [
             ElevatedButton(
               onPressed: () {

@@ -7,6 +7,7 @@ import 'package:mnnit/models/product.dart';
 import 'package:mnnit/pages/landing_page.dart';
 import 'package:mnnit/widgets/circular_progress.dart';
 import 'package:mnnit/widgets/custom_textformfield.dart';
+import 'package:mnnit/widgets/snackbar.dart';
 
 class EditProductDetailsPage extends StatefulWidget {
   final Product product;
@@ -75,12 +76,12 @@ class _EditProductDetailsPageState extends State<EditProductDetailsPage> {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              if (_uploadedImages!=null)
+              if (_uploadedImages!=null && _uploadedImages!.isNotEmpty)
               SizedBox(
                 height: 200,
                 width: MediaQuery.of(context).size.width,
                 child: ListView.builder(
-                  itemCount: widget.product.images.length,
+                  itemCount: _uploadedImages!.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
                     return Card(
@@ -105,6 +106,35 @@ class _EditProductDetailsPageState extends State<EditProductDetailsPage> {
                   },
                 ),
               ),
+              if (_images.isNotEmpty) SizedBox(
+                height: 200,
+                width: MediaQuery.of(context).size.width,
+                child: ListView.builder(
+                  itemCount: _images.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: Stack(
+                        children: [
+                          Image.file(_images[index], fit: BoxFit.cover),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () {
+                                setState(() {
+                                  _images.removeAt(index);
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
               IconButton(
                 onPressed: _pickImage,
                 icon: const Column(
@@ -117,7 +147,6 @@ class _EditProductDetailsPageState extends State<EditProductDetailsPage> {
                     Text('Add another image', style: TextStyle(color: Colors.white),)
                   ],
                 ),
-
               ),
               const SizedBox(
                 height: 10,
@@ -196,31 +225,30 @@ class _EditProductDetailsPageState extends State<EditProductDetailsPage> {
               const SizedBox(height: 25),
               ElevatedButton(
                 onPressed: () async {
-                  showProgress(context);
-                  final Firebase storage = Firebase();
-                  await _uploadImages().then((value) async {
-                    _uploadedImageUrls = value;
-                    await storage.updateProduct(
-                        name: name.text,
-                        price: double.parse(price.text),
-                        negotiable: fixed_price!,
-                        description: description.text,
-                        location: location.text,
-                        images: _uploadedImageUrls,
-                        productID: widget.product.id
-                    );
-                  });
-                  Navigator.pop(context);
-                  showDone(context);
+                  if(_uploadedImages!.isEmpty && _images.isEmpty){
+                    showSnackbar(context: context, content: 'You must add atleast one image of product');
+                  }
+                  else {
+                    showProgress(context);
+                    final Firebase storage = Firebase();
+                    await _uploadImages().then((value) async {
+                      _uploadedImages!.addAll(value);
+                      await storage.updateProduct(
+                          name: name.text,
+                          price: double.parse(price.text),
+                          negotiable: fixed_price!,
+                          description: description.text,
+                          location: location.text,
+                          images: _uploadedImages!,
+                          productID: widget.product.id
+                      );
+                    });
+                    Navigator.pop(context);
+                    showDone(context);
+                  }
                 },
                 child: const Text('Save'),
               ),
-              // TextButton(
-              //     onPressed: () {
-              //       Navigator.pushReplacement(context,
-              //           MaterialPageRoute(builder: (context) => LandingPage()));
-              //     },
-              //     child: Text('back'))
             ],
           ),
         ),
@@ -281,8 +309,6 @@ class _EditProductDetailsPageState extends State<EditProductDetailsPage> {
 
   Future<List<String>> _uploadImages() async {
     if (_images.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('No images selected')));
       return [];
     }
 
@@ -323,8 +349,8 @@ class _EditProductDetailsPageState extends State<EditProductDetailsPage> {
         _isUploading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error uploading images'),
+        SnackBar(
+          content: Text('Error uploading images: $e'),
         ),
       );
     }
@@ -357,8 +383,8 @@ class _EditProductDetailsPageState extends State<EditProductDetailsPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('Successfully Added'),
-            content: const Text('Refresh your Products Page to sync changes'),
+            title: const Text('Changes saved'),
+            content: const Text('Click OK to go back to Your Products.'),
             actions: [
               ElevatedButton(
                   onPressed: () {
@@ -368,7 +394,7 @@ class _EditProductDetailsPageState extends State<EditProductDetailsPage> {
                       MaterialPageRoute(
                         builder: (context) => LandingPage(initialPage: 2),
                       ),
-                          (route) => false,
+                      (route) => false,
                     );
                   },
                   child: const Text(
@@ -378,6 +404,7 @@ class _EditProductDetailsPageState extends State<EditProductDetailsPage> {
             ],
           );
         },
+      barrierDismissible: false,
     );
   }
 

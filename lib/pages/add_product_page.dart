@@ -251,12 +251,6 @@ class _AddProductPageState extends State<AddProductPage> {
                 },
                 child: const Text('Save'),
               ),
-              // TextButton(
-              //     onPressed: () {
-              //       Navigator.pushReplacement(context,
-              //           MaterialPageRoute(builder: (context) => LandingPage()));
-              //     },
-              //     child: Text('back'))
             ],
           ),
         ),

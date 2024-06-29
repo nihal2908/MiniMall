@@ -107,7 +107,8 @@ class Firebase{
       await firestore.collection('products').doc(productID).update({
         'name': name,
         'description': description,
-        'price': price,
+        'newPrice': price,
+        'pricechanged': true,
         'negotiable': negotiable,
         'location': location,
         'images': images,

@@ -76,7 +76,7 @@ class _SellPageState extends State<SellPage> {
                         data: productData
                       );
 
-                      return MyProductTile(product: product, widget: SellPage(), reload: setState,);
+                      return MyProductTile(product: product, reload: setState,);
                     },
                   );
                 }).toList(),
